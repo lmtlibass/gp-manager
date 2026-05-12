@@ -106,3 +106,9 @@ L'application gère plusieurs types de rôles :
 ---
 
 Cette documentation est un résumé du fonctionnement et de la stack du projet GP Manager. Si tu veux, je peux aussi générer un diagramme des flux ou une documentation plus détaillée par fonctionnalité.`}
+
+
+
+<!-- open router api_key -->
+
+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

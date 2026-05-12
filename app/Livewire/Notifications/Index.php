@@ -4,11 +4,13 @@ namespace App\Livewire\Notifications;
 
 use App\Enums\NotificationChannel;
 use App\Enums\NotificationStatus;
+use App\Enums\VoiceIntentEnum;
 use App\Models\Package;
 use App\Models\PackageNotification;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -27,6 +29,40 @@ class Index extends Component
     public function mount(): void
     {
         $this->authorize('viewAny', Package::class);
+
+        // Voice command: send_notification
+        $sendKey = VoiceIntentEnum::SendNotification->sessionKey();
+        if ($voiceData = session()->pull($sendKey)) {
+            $this->package_tracking = $voiceData['tracking_number'] ?? $voiceData['withdrawal_code'] ?? '';
+            $this->search = $voiceData['customer_name'] ?? '';
+
+            // Set message based on message_type
+            if (isset($voiceData['message_type'])) {
+                $this->message = match ($voiceData['message_type']) {
+                    'arrived' => 'Votre colis est arrivé à l\'agence. Vous pouvez venir le retirer.',
+                    'ready_for_pickup' => 'Votre colis est prêt pour le retrait. Présentez-vous avec votre code de retrait.',
+                    default => '',
+                };
+            }
+        }
+    }
+
+    #[On('voice-command-applied')]
+    public function onVoiceCommandApplied(string $intent, array $data): void
+    {
+        if ($intent === VoiceIntentEnum::SendNotification->value) {
+            $this->package_tracking = $data['tracking_number'] ?? $data['withdrawal_code'] ?? $this->package_tracking;
+            $this->search = $data['customer_name'] ?? $this->search;
+
+            // Set message based on message_type
+            if (isset($data['message_type'])) {
+                $this->message = match ($data['message_type']) {
+                    'arrived' => 'Votre colis est arrivé à l\'agence. Vous pouvez venir le retirer.',
+                    'ready_for_pickup' => 'Votre colis est prêt pour le retrait. Présentez-vous avec votre code de retrait.',
+                    default => $this->message,
+                };
+            }
+        }
     }
 
     public function create(): void

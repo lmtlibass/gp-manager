@@ -19,10 +19,10 @@
         <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
             <div class="flex items-center gap-2.5">
                 <span class="stat-icon bg-blue-50 text-blue-500" style="width:2.25rem;height:2.25rem;border-radius:0.75rem;font-size:0.875rem;">
-                    <i class="fa-solid {{ $editingCustomerId ? 'fa-pen' : 'fa-user-plus' }}"></i>
+<i class="fa-solid {{ $editingId ? 'fa-pen' : 'fa-user-plus' }}"></i>
                 </span>
                 <div>
-                    <h2 class="section-title">{{ $editingCustomerId ? 'Modifier le client' : 'Nouveau client' }}</h2>
+<h2 class="section-title">{{ $editingId ? 'Modifier le client' : 'Nouveau client' }}</h2>
                     <p class="text-xs text-slate-400 mt-0.5">Coordonnées et informations de contact</p>
                 </div>
             </div>

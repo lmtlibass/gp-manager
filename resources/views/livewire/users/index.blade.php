@@ -21,7 +21,7 @@
     <div class="card-panel">
         <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
             <div>
-                <h2 class="section-title">{{ $editingUserId ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}</h2>
+<h2 class="section-title">{{ $editingId ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}</h2>
                 <p class="mt-0.5 text-sm text-slate-500">Remplissez les informations du compte.</p>
             </div>
             <button wire:click="$set('showForm', false)"
@@ -53,7 +53,8 @@
                 </div>
                 <div>
                     <label class="form-label">Mot de passe</label>
-                    <input wire:model="password" type="password" class="form-input" placeholder="{{ $editingUserId ? 'Laisser vide pour ne pas changer' : '••••••••' }}">
+<input wire:model="password" type="password" class="form-input"
+                        placeholder="{{ $editingId ? 'Laisser vide pour ne pas changer' : '••••••••' }}">
                     @error('password') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>

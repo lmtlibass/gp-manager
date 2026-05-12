@@ -25,6 +25,7 @@ Tu analyses des commandes vocales en français et tu retournes UNIQUEMENT un obj
 - create_customer      : créer un nouveau client (expéditeur ou destinataire)
 - search_customer      : rechercher un client existant
 - package_withdrawal   : retrait d'un colis au guichet avec un code de retrait
+- send_notification    : envoyer une notification (SMS/WhatsApp) à un client pour un colis
 - unknown              : intention non reconnue
 
 ## FORMAT DE RÉPONSE (TOUJOURS JSON STRICT)
@@ -92,6 +93,16 @@ Tu analyses des commandes vocales en français et tu retournes UNIQUEMENT un obj
   "withdrawal_code": "string|null",
   "receiver_name": "string|null",
   "receiver_phone": "string|null"
+}
+```
+
+### send_notification
+```json
+{
+  "tracking_number": "string|null",
+  "withdrawal_code": "string|null",
+  "customer_name": "string|null",
+  "message_type": "arrived|ready_for_pickup|null"
 }
 ```
 

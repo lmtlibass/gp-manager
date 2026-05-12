@@ -3,9 +3,11 @@
 namespace App\Livewire\Packages;
 
 use App\Enums\PackageStatus;
+use App\Enums\VoiceIntentEnum;
 use App\Models\Package;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -23,6 +25,18 @@ class Index extends Component
     public function mount(): void
     {
         $this->authorize('viewAny', Package::class);
+
+        // Voice command: search_package
+        $searchKey = VoiceIntentEnum::SearchPackage->sessionKey();
+        if ($voiceData = session()->pull($searchKey)) {
+            $this->search = $voiceData['tracking_number'] ?? $voiceData['withdrawal_code'] ?? $voiceData['customer_name'] ?? '';
+        }
+
+        // Voice command: update_package_status
+        $updateKey = VoiceIntentEnum::UpdatePackageStatus->sessionKey();
+        if ($voiceData = session()->pull($updateKey)) {
+            $this->search = $voiceData['tracking_number'] ?? $voiceData['withdrawal_code'] ?? $voiceData['customer_name'] ?? '';
+        }
     }
 
     public function updatingSearch(): void
@@ -33,6 +47,16 @@ class Index extends Component
     public function updatingStatus(): void
     {
         $this->resetPage();
+    }
+
+    #[On('voice-command-applied')]
+    public function onVoiceCommandApplied(string $intent, array $data): void
+    {
+        if ($intent === VoiceIntentEnum::SearchPackage->value) {
+            $this->search = $data['tracking_number'] ?? $data['withdrawal_code'] ?? $data['customer_name'] ?? '';
+        } elseif ($intent === VoiceIntentEnum::UpdatePackageStatus->value) {
+            $this->search = $data['tracking_number'] ?? $data['withdrawal_code'] ?? $data['customer_name'] ?? '';
+        }
     }
 
     public function sortBy(string $field): void

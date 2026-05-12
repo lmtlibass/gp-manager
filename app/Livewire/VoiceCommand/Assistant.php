@@ -80,7 +80,7 @@ class Assistant extends Component
 
         // Mark as applied in log
         if (! empty($this->commandResult['log_id'])) {
-            app(VoiceCommandService::class)->markApplied($this->commandResult['log_id']);
+            $this->makeService()->markApplied($this->commandResult['log_id']);
         }
 
         // Store enriched data in session keyed by intent

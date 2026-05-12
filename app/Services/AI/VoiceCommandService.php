@@ -4,8 +4,10 @@ namespace App\Services\AI;
 
 use App\Enums\VoiceIntentEnum;
 use App\Models\Customer;
+use App\Models\Package;
 use App\Models\User;
 use App\Models\VoiceCommandLog;
+use App\Services\AI\OpenRouterService;
 use Illuminate\Support\Facades\Log;
 use JsonException;
 use RuntimeException;
@@ -53,6 +55,11 @@ class VoiceCommandService
             // Enrich data: resolve customer names to IDs for package operations
             if ($intent === VoiceIntentEnum::CreatePackage) {
                 $data = $this->resolveCustomerIds($data, $user);
+            }
+
+            // Enrich data: resolve package tracking/withdrawal to package_id for notifications
+            if ($intent === VoiceIntentEnum::SendNotification) {
+                $data = $this->resolvePackageId($data, $user);
             }
 
             $log->update([
@@ -139,6 +146,34 @@ class VoiceCommandService
             $match = $this->findCustomerByName($data['receiver_name'], $user->agency_id);
             $data['receiver_id']   = $match?->id;
             $data['receiver_match_name'] = $match?->full_name;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Try to match tracking_number or withdrawal_code to a real package ID in the user's agency.
+     */
+    private function resolvePackageId(array $data, User $user): array
+    {
+        $trackingNumber = $data['tracking_number'] ?? null;
+        $withdrawalCode = $data['withdrawal_code'] ?? null;
+
+        if ($trackingNumber) {
+            $package = Package::query()
+                ->visibleFor($user)
+                ->where('tracking_number', $trackingNumber)
+                ->first();
+        } elseif ($withdrawalCode) {
+            $package = Package::query()
+                ->visibleFor($user)
+                ->where('withdrawal_code', $withdrawalCode)
+                ->first();
+        }
+
+        if (isset($package)) {
+            $data['package_id'] = $package->id;
+            $data['package_match_tracking'] = $package->tracking_number;
         }
 
         return $data;

@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Customers;
 
+use App\Enums\VoiceIntentEnum;
 use App\Models\Customer;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -29,11 +31,45 @@ class Index extends Component
     public function mount(): void
     {
         $this->authorize('viewAny', Customer::class);
+
+        // Voice command: create_customer
+        $createKey = VoiceIntentEnum::CreateCustomer->sessionKey();
+        if ($voiceData = session()->pull($createKey)) {
+            $this->first_name = $voiceData['first_name'] ?? '';
+            $this->last_name = $voiceData['last_name'] ?? '';
+            $this->phone = $voiceData['phone'] ?? '';
+            $this->email = $voiceData['email'] ?? '';
+            $this->city = $voiceData['city'] ?? '';
+            $this->country = $voiceData['country'] ?? '';
+            $this->showForm = true;
+        }
+
+        // Voice command: search_customer
+        $searchKey = VoiceIntentEnum::SearchCustomer->sessionKey();
+        if ($voiceData = session()->pull($searchKey)) {
+            $this->search = $voiceData['name'] ?? $voiceData['phone'] ?? '';
+        }
     }
 
     public function updatingSearch(): void
     {
         $this->resetPage();
+    }
+
+    #[On('voice-command-applied')]
+    public function onVoiceCommandApplied(string $intent, array $data): void
+    {
+        if ($intent === VoiceIntentEnum::CreateCustomer->value) {
+            $this->first_name = $data['first_name'] ?? $this->first_name;
+            $this->last_name = $data['last_name'] ?? $this->last_name;
+            $this->phone = $data['phone'] ?? $this->phone;
+            $this->email = $data['email'] ?? $this->email;
+            $this->city = $data['city'] ?? $this->city;
+            $this->country = $data['country'] ?? $this->country;
+            $this->showForm = true;
+        } elseif ($intent === VoiceIntentEnum::SearchCustomer->value) {
+            $this->search = $data['name'] ?? $data['phone'] ?? '';
+        }
     }
 
     public function create(): void

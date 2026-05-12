@@ -10,6 +10,7 @@ enum VoiceIntentEnum: string
     case CreateCustomer       = 'create_customer';
     case SearchCustomer       = 'search_customer';
     case PackageWithdrawal    = 'package_withdrawal';
+    case SendNotification     = 'send_notification';
     case Unknown              = 'unknown';
 
     public function label(): string
@@ -21,6 +22,7 @@ enum VoiceIntentEnum: string
             self::CreateCustomer      => 'Créer un client',
             self::SearchCustomer      => 'Rechercher un client',
             self::PackageWithdrawal   => 'Retrait de colis',
+            self::SendNotification    => 'Envoyer une notification',
             self::Unknown             => 'Inconnu',
         };
     }
@@ -34,6 +36,7 @@ enum VoiceIntentEnum: string
             self::CreateCustomer      => 'fa-user-plus',
             self::SearchCustomer      => 'fa-address-book',
             self::PackageWithdrawal   => 'fa-hand-holding-box',
+            self::SendNotification    => 'fa-bell',
             self::Unknown             => 'fa-circle-question',
         };
     }
@@ -47,6 +50,7 @@ enum VoiceIntentEnum: string
             self::CreateCustomer      => 'customers.index',
             self::SearchCustomer      => 'customers.index',
             self::PackageWithdrawal   => 'withdrawals.process',
+            self::SendNotification    => 'notifications.index',
             self::Unknown             => null,
         };
     }
