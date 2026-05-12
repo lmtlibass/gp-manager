@@ -1,84 +1,154 @@
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">{{ $package?->exists ? 'Modifier le colis' : 'Créer un colis' }}</h1>
-            <p class="mt-1 text-sm text-gray-600">Les numéros de tracking et de retrait sont générés automatiquement.</p>
+<div class="space-y-6">
+
+    {{-- Header --}}
+    <div class="card-panel">
+        <div class="panel-header">
+            <div>
+                <p class="page-eyebrow">{{ $package?->exists ? 'Édition' : 'Nouveau' }}</p>
+                <h1 class="page-heading mt-1">
+                    {{ $package?->exists ? 'Modifier le colis' : 'Créer un colis' }}
+                </h1>
+                <p class="page-subtitle">Les numéros de tracking et de retrait sont générés automatiquement.</p>
+            </div>
+            <a href="{{ route('packages.index') }}" class="btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i>Retour
+            </a>
         </div>
-        <a href="{{ route('packages.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Retour</a>
     </div>
 
-    <form wire:submit="save" class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200 space-y-6">
-        <div class="grid gap-5 md:grid-cols-2">
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Expéditeur</span>
-                <select wire:model="sender_id" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option value="">Choisir</option>
-                    @foreach ($customers as $customer)
-                        <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
-                    @endforeach
-                </select>
-                @error('sender_id') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-            </label>
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Destinataire</span>
-                <select wire:model="receiver_id" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option value="">Choisir</option>
-                    @foreach ($customers as $customer)
-                        <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
-                    @endforeach
-                </select>
-                @error('receiver_id') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-            </label>
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Nom du colis</span>
-                <input wire:model="package_name" type="text" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                @error('package_name') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-            </label>
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Statut</span>
-                <select wire:model="status" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    @foreach ($statuses as $statusOption)
-                        <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
-                    @endforeach
-                </select>
-            </label>
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Poids</span>
-                <input wire:model="weight" type="number" step="0.01" min="0" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            </label>
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Quantité</span>
-                <input wire:model="quantity" type="number" min="1" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            </label>
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Valeur déclarée</span>
-                <input wire:model="declared_value" type="number" step="0.01" min="0" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            </label>
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Pays origine</span>
-                <input wire:model="origin_country" type="text" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            </label>
-            <label class="block">
-                <span class="text-sm font-medium text-gray-700">Pays destination</span>
-                <input wire:model="destination_country" type="text" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            </label>
-        </div>
+    {{-- Form --}}
+    <form wire:submit="save">
+        <div class="grid gap-6 lg:grid-cols-3">
 
-        <label class="block">
-            <span class="text-sm font-medium text-gray-700">Description</span>
-            <textarea wire:model="description" rows="3" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
-        </label>
-        <label class="block">
-            <span class="text-sm font-medium text-gray-700">Notes internes</span>
-            <textarea wire:model="notes" rows="3" class="mt-1 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
-        </label>
+            {{-- Main fields --}}
+            <div class="lg:col-span-2 space-y-6">
 
-        <div class="flex justify-end gap-3">
-            <a href="{{ route('packages.index') }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Annuler</a>
-            <button type="submit" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700" wire:loading.attr="disabled">
-                <span wire:loading.remove>Enregistrer</span>
-                <span wire:loading>Enregistrement...</span>
-            </button>
+                {{-- Parties --}}
+                <div class="card-panel">
+                    <h2 class="section-title mb-5">
+                        <i class="fa-solid fa-users text-[#FF8F1D] mr-2"></i>Expéditeur & Destinataire
+                    </h2>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="form-label">Expéditeur</label>
+                            <select wire:model="sender_id" class="form-select">
+                                <option value="">Sélectionner un expéditeur</option>
+                                @foreach ($customers as $customer)
+                                    <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
+                                @endforeach
+                            </select>
+                            @error('sender_id') <p class="form-error">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="form-label">Destinataire</label>
+                            <select wire:model="receiver_id" class="form-select">
+                                <option value="">Sélectionner un destinataire</option>
+                                @foreach ($customers as $customer)
+                                    <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
+                                @endforeach
+                            </select>
+                            @error('receiver_id') <p class="form-error">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Colis details --}}
+                <div class="card-panel">
+                    <h2 class="section-title mb-5">
+                        <i class="fa-solid fa-box text-[#FF8F1D] mr-2"></i>Détails du colis
+                    </h2>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div class="md:col-span-2">
+                            <label class="form-label">Nom du colis</label>
+                            <input wire:model="package_name" type="text" class="form-input" placeholder="Ex: Vêtements, Électronique…">
+                            @error('package_name') <p class="form-error">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="form-label">Poids (kg)</label>
+                            <input wire:model="weight" type="number" step="0.01" min="0" class="form-input" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label class="form-label">Quantité</label>
+                            <input wire:model="quantity" type="number" min="1" class="form-input" placeholder="1">
+                        </div>
+                        <div>
+                            <label class="form-label">Valeur déclarée</label>
+                            <input wire:model="declared_value" type="number" step="0.01" min="0" class="form-input" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label class="form-label">Statut</label>
+                            <select wire:model="status" class="form-select">
+                                @foreach ($statuses as $statusOption)
+                                    <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Pays d'origine</label>
+                            <input wire:model="origin_country" type="text" class="form-input" placeholder="France">
+                        </div>
+                        <div>
+                            <label class="form-label">Pays de destination</label>
+                            <input wire:model="destination_country" type="text" class="form-input" placeholder="Sénégal">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Notes --}}
+                <div class="card-panel">
+                    <h2 class="section-title mb-5">
+                        <i class="fa-solid fa-note-sticky text-[#FF8F1D] mr-2"></i>Description & Notes
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="form-label">Description</label>
+                            <textarea wire:model="description" rows="3" class="form-input" placeholder="Contenu du colis, informations utiles…"></textarea>
+                        </div>
+                        <div>
+                            <label class="form-label">Notes internes</label>
+                            <textarea wire:model="notes" rows="3" class="form-input" placeholder="Instructions pour l'équipe…"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Side actions --}}
+            <div class="space-y-4">
+                <div class="card-panel sticky top-6">
+                    <h2 class="section-title mb-4">Enregistrement</h2>
+                    @if ($package?->exists)
+                    <div class="mb-4 rounded-xl bg-slate-50 px-4 py-3 text-sm">
+                        <div class="text-xs text-slate-400 uppercase tracking-widest mb-1">Tracking</div>
+                        <div class="font-semibold text-[#001F3D]">{{ $package->tracking_number }}</div>
+                        <div class="mt-2 text-xs text-slate-400 uppercase tracking-widest">Code retrait</div>
+                        <div class="font-semibold text-[#FF8F1D]">{{ $package->withdrawal_code }}</div>
+                    </div>
+                    @else
+                    <p class="mb-4 rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
+                        <i class="fa-solid fa-info-circle text-[#0062a3] mr-1.5"></i>
+                        Le numéro de tracking et le code de retrait seront générés automatiquement à l'enregistrement.
+                    </p>
+                    @endif
+
+                    <div class="space-y-3">
+                        <button type="submit" class="btn-primary w-full" wire:loading.attr="disabled">
+                            <span wire:loading.remove>
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                {{ $package?->exists ? 'Mettre à jour' : 'Créer le colis' }}
+                            </span>
+                            <span wire:loading class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-notch fa-spin"></i>Enregistrement…
+                            </span>
+                        </button>
+                        <a href="{{ route('packages.index') }}" class="btn-secondary w-full">
+                            Annuler
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </form>
+
 </div>

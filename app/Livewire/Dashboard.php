@@ -4,12 +4,20 @@ namespace App\Livewire;
 
 use App\Enums\PackageStatus;
 use App\Models\Package;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
+    use AuthorizesRequests;
+
     public string $scope = 'agency';
+
+    public function mount(): void
+    {
+        $this->authorize('viewAny', Package::class);
+    }
 
     public function render()
     {

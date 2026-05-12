@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\User;
 
-use App\Enums\Role;
+use App\Enums\UserRoleEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ class CreateUserRequest extends FormRequest
     {
         $user = Auth::user();
         
-        return $user && in_array($user->role, [Role::Admin, Role::GpManager]);
+        return $user && in_array($user->role, [UserRoleEnum::Admin, UserRoleEnum::GpManager], true);
     }
 
     /**
@@ -33,7 +33,7 @@ class CreateUserRequest extends FormRequest
             'email' => ['required', 'email', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'string', Rule::enum(Role::class)],
+            'role' => ['required', 'string', Rule::enum(UserRoleEnum::class)],
             'agency_id' => ['required', 'exists:agencies,id'],
             'is_active' => ['boolean'],
         ];
@@ -59,4 +59,3 @@ class CreateUserRequest extends FormRequest
         return parent::validated($key, $default);
     }
 }
-

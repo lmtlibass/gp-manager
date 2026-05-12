@@ -27,8 +27,12 @@ class UserController extends Controller
     public function updateProfile(UpdateProfileRequest $request)
     {
         /** @var \App\Models\User $user */
-        $user = Auth::user();   
-        $user->update($request->validated());
+        $user = Auth::user();
+        $validated = $request->validated();
+
+        $user->update(array_merge($validated, [
+            'name' => $this->fullName($validated['first_name'], $validated['last_name']),
+        ]));
 
         return redirect()->route('user.profile')
             ->with('success', 'Votre profil a été mis à jour avec succès.');
@@ -61,9 +65,13 @@ class UserController extends Controller
      */
     public function store(CreateUserRequest $request)
     {
-        User::create($request->validated());
+        $validated = $request->validated();
 
-        return redirect()->route('user.index')
+        User::create(array_merge($validated, [
+            'name' => $this->fullName($validated['first_name'], $validated['last_name']),
+        ]));
+
+        return redirect()->route('users.index')
             ->with('success', 'L\'utilisateur a été créé avec succès.');
     }
 
@@ -103,9 +111,11 @@ class UserController extends Controller
             'is_active' => ['boolean'],
         ]);
 
-        $user->update($validated);
+        $user->update(array_merge($validated, [
+            'name' => $this->fullName($validated['first_name'], $validated['last_name']),
+        ]));
 
-        return redirect()->route('user.show', $user)
+        return redirect()->route('users.show', $user)
             ->with('success', 'L\'utilisateur a été mis à jour avec succès.');
     }
 
@@ -116,8 +126,12 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return redirect()->route('user.index')
+        return redirect()->route('users.index')
             ->with('success', 'L\'utilisateur a été supprimé avec succès.');
     }
-}
 
+    private function fullName(string $firstName, string $lastName): string
+    {
+        return trim($firstName.' '.$lastName);
+    }
+}

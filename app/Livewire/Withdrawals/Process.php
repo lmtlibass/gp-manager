@@ -5,18 +5,26 @@ namespace App\Livewire\Withdrawals;
 use App\Enums\PackageStatus;
 use App\Models\Package;
 use App\Models\Withdrawal;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Process extends Component
 {
+    use AuthorizesRequests;
+
     public string $withdrawal_code = '';
     public ?Package $package = null;
     public string $receiver_name = '';
     public string $receiver_phone = '';
     public string $identity_document = '';
     public string $notes = '';
+
+    public function mount(): void
+    {
+        $this->authorize('create', Withdrawal::class);
+    }
 
     public function findPackage(): void
     {
@@ -34,6 +42,8 @@ class Process extends Component
             return;
         }
 
+        $this->authorize('view', $this->package);
+
         $this->receiver_name = $this->package->receiver->full_name;
         $this->receiver_phone = $this->package->receiver->phone;
     }
@@ -43,6 +53,9 @@ class Process extends Component
         if (! $this->package) {
             $this->findPackage();
         }
+
+        $this->authorize('create', Withdrawal::class);
+        $this->authorize('update', $this->package);
 
         $this->validate([
             'receiver_name' => ['required', 'string', 'max:255'],

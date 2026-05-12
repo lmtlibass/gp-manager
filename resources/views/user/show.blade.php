@@ -1,96 +1,103 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">
-            {{ $user->first_name }} {{ $user->last_name }}
-        </h1>
-        <div class="flex gap-2">
-            <a href="{{ route('user.edit', $user) }}"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-                Éditer
-            </a>
-            <form method="POST" action="{{ route('user.destroy', $user) }}" onsubmit="return confirm('Êtes-vous sûr ?');" class="inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700">
-                    Supprimer
-                </button>
-            </form>
-        </div>
-    </div>
+<div class="space-y-6">
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="md:col-span-2">
-            <div class="bg-white shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <h2 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                        Informations personnelles
-                    </h2>
-                    <dl class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Prénom</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $user->first_name }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Nom</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $user->last_name }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Email</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $user->email }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Téléphone</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $user->phone ?? 'N/A' }}</dd>
-                        </div>
-                    </dl>
+    {{-- Header --}}
+    <div class="card-panel">
+        <div class="panel-header">
+            <div class="flex items-center gap-4">
+                <span class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#001F3D] text-xl font-bold uppercase text-white">
+                    {{ mb_strtoupper(mb_substr($user->first_name, 0, 1)) }}
+                </span>
+                <div>
+                    <p class="page-eyebrow">Fiche utilisateur</p>
+                    <h1 class="page-heading mt-0.5">{{ $user->first_name }} {{ $user->last_name }}</h1>
+                    <p class="page-subtitle">{{ $user->email }}</p>
                 </div>
             </div>
-        </div>
-
-        <div>
-            <div class="bg-white shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <h2 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                        Statut
-                    </h2>
-                    <dl class="space-y-4">
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Rôle</dt>
-                            <dd class="mt-1 text-sm text-gray-900">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    {{ $user->role->value === 'admin' ? 'bg-purple-100 text-purple-800' : ($user->role->value === 'gp_manager' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
-                                    {{ ucfirst($user->role->value) }}
-                                </span>
-                            </dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Agence</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $user->agency->name }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Statut</dt>
-                            <dd class="mt-1">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    {{ $user->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ $user->is_active ? 'Actif' : 'Inactif' }}
-                                </span>
-                            </dd>
-                        </div>
-                    </dl>
-                </div>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('users.edit', $user) }}" class="btn-primary">
+                    <i class="fa-solid fa-pen"></i>Modifier
+                </a>
+                <form method="POST" action="{{ route('users.destroy', $user) }}"
+                    onsubmit="return confirm('Supprimer cet utilisateur définitivement ?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-danger">
+                        <i class="fa-solid fa-trash"></i>Supprimer
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <div class="mt-6">
-        <a href="{{ route('user.index') }}"
-            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-            Retour à la liste
+    <div class="grid gap-6 lg:grid-cols-3">
+
+        {{-- Main info --}}
+        <div class="lg:col-span-2 card-panel">
+            <h2 class="section-title mb-5">
+                <i class="fa-solid fa-id-card text-[#FF8F1D] mr-2"></i>Informations personnelles
+            </h2>
+            <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                <div>
+                    <dt class="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">Prénom</dt>
+                    <dd class="mt-1 font-medium text-slate-900">{{ $user->first_name }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">Nom</dt>
+                    <dd class="mt-1 font-medium text-slate-900">{{ $user->last_name }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">Email</dt>
+                    <dd class="mt-1 font-medium text-slate-900">{{ $user->email }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">Téléphone</dt>
+                    <dd class="mt-1 font-medium text-slate-900">{{ $user->phone ?? '—' }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        {{-- Status sidebar --}}
+        <div class="card-panel space-y-5">
+            <h2 class="section-title">
+                <i class="fa-solid fa-shield-halved text-[#FF8F1D] mr-2"></i>Statut & Accès
+            </h2>
+
+            <div>
+                <dt class="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400 mb-2">Rôle</dt>
+                <dd>
+                    <span class="inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold ring-1 ring-inset {{ $user->role->badgeClasses() }}">
+                        {{ $user->role->label() }}
+                    </span>
+                </dd>
+            </div>
+
+            <div>
+                <dt class="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400 mb-2">Agence</dt>
+                <dd class="font-medium text-slate-900">{{ $user->agency->name ?? '—' }}</dd>
+            </div>
+
+            <div>
+                <dt class="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400 mb-2">Statut du compte</dt>
+                <dd>
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold ring-1 ring-inset
+                        {{ $user->is_active ? 'bg-emerald-50 text-emerald-700 ring-emerald-500/20' : 'bg-rose-50 text-rose-700 ring-rose-500/20' }}">
+                        <span class="h-2 w-2 rounded-full {{ $user->is_active ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
+                        {{ $user->is_active ? 'Actif' : 'Inactif' }}
+                    </span>
+                </dd>
+            </div>
+        </div>
+
+    </div>
+
+    <div>
+        <a href="{{ route('users.index') }}" class="btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i>Retour à la liste
         </a>
     </div>
+
 </div>
 @endsection

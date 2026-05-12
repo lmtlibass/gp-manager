@@ -3,15 +3,22 @@
 namespace App\Livewire\Search;
 
 use App\Models\Package;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class GlobalSearch extends Component
 {
+    use AuthorizesRequests;
     use WithPagination;
 
     public string $search = '';
+
+    public function mount(): void
+    {
+        $this->authorize('viewAny', Package::class);
+    }
 
     public function updatingSearch(): void
     {

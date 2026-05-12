@@ -1,64 +1,137 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-900">Notifications</h1>
-        <p class="mt-1 text-sm text-gray-600">Journal prêt pour une future intégration WhatsApp.</p>
+<div class="space-y-6">
+
+    {{-- Header --}}
+    <div class="card-panel">
+        <div>
+            <p class="page-eyebrow">Communication</p>
+            <h1 class="page-heading mt-1">Notifications</h1>
+            <p class="page-subtitle">Journal des notifications liées aux colis (WhatsApp, SMS).</p>
+        </div>
     </div>
 
-    <form wire:submit="create" class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200 space-y-4">
-        <div class="grid gap-4 md:grid-cols-5">
-            <input wire:model="package_tracking" placeholder="Tracking colis" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            <select wire:model="channel" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                @foreach ($channels as $channelOption)
-                    <option value="{{ $channelOption->value }}">{{ $channelOption->label() }}</option>
-                @endforeach
-            </select>
-            <input wire:model="recipient_phone" placeholder="Téléphone" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            <select wire:model="status" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                @foreach ($statuses as $statusOption)
-                    <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
-                @endforeach
-            </select>
-            <button class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Enregistrer</button>
-        </div>
-        <textarea wire:model="message" rows="3" placeholder="Message" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
-        @if ($errors->any())
-            <p class="text-sm text-red-600">{{ $errors->first() }}</p>
-        @endif
-    </form>
+    {{-- Add notification --}}
+    <div class="card-panel">
+        <h2 class="section-title mb-5">
+            <i class="fa-solid fa-plus-circle text-[#FF8F1D] mr-2"></i>Nouvelle notification
+        </h2>
+        <form wire:submit="create" class="space-y-4">
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                <div>
+                    <label class="form-label">Tracking colis</label>
+                    <input wire:model="package_tracking" type="text" class="form-input" placeholder="WM-2024-000001">
+                </div>
+                <div>
+                    <label class="form-label">Canal</label>
+                    <select wire:model="channel" class="form-select">
+                        @foreach ($channels as $channelOption)
+                            <option value="{{ $channelOption->value }}">{{ $channelOption->label() }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Téléphone destinataire</label>
+                    <input wire:model="recipient_phone" type="tel" class="form-input" placeholder="+33 6 00 00 00 00">
+                </div>
+                <div>
+                    <label class="form-label">Statut initial</label>
+                    <select wire:model="status" class="form-select">
+                        @foreach ($statuses as $statusOption)
+                            <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="btn-primary w-full">
+                        <i class="fa-solid fa-paper-plane"></i>Enregistrer
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label class="form-label">Message</label>
+                <textarea wire:model="message" rows="3" class="form-input"
+                    placeholder="Votre colis WM-2024-XXXXXX est disponible au retrait…"></textarea>
+            </div>
+            @if ($errors->any())
+            <p class="text-sm font-medium text-rose-600">
+                <i class="fa-solid fa-circle-exclamation mr-1.5"></i>{{ $errors->first() }}
+            </p>
+            @endif
+        </form>
+    </div>
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="border-b border-gray-100 p-4">
-            <input wire:model.live.debounce.300ms="search" type="search" placeholder="Rechercher notification" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 md:max-w-md">
+    {{-- Table --}}
+    <div class="card-panel space-y-0">
+
+        {{-- Search --}}
+        <div class="border-b border-slate-100 pb-5">
+            <div class="relative max-w-md">
+                <span class="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input wire:model.live.debounce.300ms="search" type="search"
+                    placeholder="Rechercher une notification…"
+                    class="form-input pl-10">
+            </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-100">
-                <thead class="bg-gray-50">
+
+        <div class="mt-5 overflow-x-auto">
+            <table class="table-surface w-full">
+                <thead>
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Colis</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Canal</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Message</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Statut</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Actions</th>
+                        <th class="table-header">Colis</th>
+                        <th class="table-header">Canal</th>
+                        <th class="table-header">Message</th>
+                        <th class="table-header">Statut</th>
+                        <th class="table-header text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-slate-100">
                     @forelse ($notifications as $notification)
-                        <tr>
-                            <td class="px-4 py-4 text-sm"><a href="{{ route('packages.show', $notification->package) }}" class="font-semibold text-blue-700">{{ $notification->package->tracking_number }}</a><br>{{ $notification->recipient_phone }}</td>
-                            <td class="px-4 py-4 text-sm text-gray-700">{{ $notification->channel->label() }}</td>
-                            <td class="px-4 py-4 text-sm text-gray-700">{{ $notification->message }}</td>
-                            <td class="px-4 py-4"><span class="rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset {{ $notification->status->badgeClasses() }}">{{ $notification->status->label() }}</span></td>
-                            <td class="px-4 py-4 text-right text-sm">
-                                <button wire:click="markSent({{ $notification->id }})" class="font-medium text-emerald-700">Envoyée</button>
-                                <button wire:click="markFailed({{ $notification->id }})" class="ml-3 font-medium text-red-600">Échec</button>
-                            </td>
-                        </tr>
+                    <tr class="table-row-hover">
+                        <td class="px-4 py-4">
+                            <a href="{{ route('packages.show', $notification->package) }}"
+                                class="font-semibold text-[#0062a3] hover:text-[#004e7b]">
+                                {{ $notification->package->tracking_number }}
+                            </a>
+                            <div class="mt-0.5 text-xs text-slate-400">{{ $notification->recipient_phone }}</div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <span class="badge badge-neutral">{{ $notification->channel->label() }}</span>
+                        </td>
+                        <td class="px-4 py-4 text-sm text-slate-600 max-w-xs">
+                            <p class="truncate">{{ $notification->message }}</p>
+                        </td>
+                        <td class="px-4 py-4">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $notification->status->badgeClasses() }}">
+                                {{ $notification->status->label() }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-right text-sm">
+                            <button wire:click="markSent({{ $notification->id }})"
+                                class="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+                                Envoyée
+                            </button>
+                            <button wire:click="markFailed({{ $notification->id }})"
+                                class="ml-4 font-semibold text-rose-500 hover:text-rose-700 transition-colors">
+                                Échec
+                            </button>
+                        </td>
+                    </tr>
                     @empty
-                        <tr><td colspan="5" class="px-4 py-10 text-center text-sm text-gray-500">Aucune notification.</td></tr>
+                    <tr>
+                        <td colspan="5" class="px-4 py-14 text-center">
+                            <i class="fa-solid fa-bell-slash text-4xl text-slate-200 mb-3 block"></i>
+                            <p class="text-sm font-medium text-slate-400">Aucune notification enregistrée.</p>
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-gray-100 px-4 py-3">{{ $notifications->links() }}</div>
+
+        <div class="mt-5 border-t border-slate-100 pt-4">
+            {{ $notifications->links() }}
+        </div>
+
     </div>
 </div>

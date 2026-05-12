@@ -3,11 +3,14 @@
 namespace App\Livewire\Customers;
 
 use App\Models\Customer;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Index extends Component
 {
+    use AuthorizesRequests;
     use WithPagination;
 
     public string $search = '';
@@ -23,6 +26,11 @@ class Index extends Component
     public string $country = '';
     public string $notes = '';
 
+    public function mount(): void
+    {
+        $this->authorize('viewAny', Customer::class);
+    }
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -30,13 +38,16 @@ class Index extends Component
 
     public function create(): void
     {
+        $this->authorize('create', Customer::class);
         $this->resetForm();
         $this->showForm = true;
     }
 
     public function edit(int $customerId): void
     {
-        $customer = Customer::query()->findOrFail($customerId);
+        $customer = Customer::query()->visibleFor(Auth::user())->findOrFail($customerId);
+        $this->authorize('update', $customer);
+
         $this->editingId = $customer->id;
         $this->first_name = $customer->first_name;
         $this->last_name = $customer->last_name ?? '';
@@ -53,6 +64,15 @@ class Index extends Component
     public function save(): void
     {
         $data = $this->validate();
+        $customer = $this->editingId
+            ? Customer::query()->visibleFor(Auth::user())->findOrFail($this->editingId)
+            : null;
+
+        $this->authorize($customer ? 'update' : 'create', $customer ?: Customer::class);
+
+        if (! $customer) {
+            $data['agency_id'] = Auth::user()->agency_id;
+        }
 
         Customer::query()->updateOrCreate(['id' => $this->editingId], $data);
 
@@ -62,7 +82,8 @@ class Index extends Component
 
     public function delete(int $customerId): void
     {
-        $customer = Customer::query()->withCount(['sentPackages', 'receivedPackages'])->findOrFail($customerId);
+        $customer = Customer::query()->visibleFor(Auth::user())->withCount(['sentPackages', 'receivedPackages'])->findOrFail($customerId);
+        $this->authorize('delete', $customer);
 
         if ($customer->sent_packages_count > 0 || $customer->received_packages_count > 0) {
             session()->flash('error', 'Impossible de supprimer un client ayant des colis.');
@@ -78,12 +99,15 @@ class Index extends Component
     {
         return view('livewire.customers.index', [
             'customers' => Customer::query()
+                ->visibleFor(Auth::user())
                 ->withCount(['sentPackages', 'receivedPackages'])
                 ->when($this->search !== '', function ($query): void {
-                    $query->where('first_name', 'like', "%{$this->search}%")
-                        ->orWhere('last_name', 'like', "%{$this->search}%")
-                        ->orWhere('phone', 'like', "%{$this->search}%")
-                        ->orWhere('email', 'like', "%{$this->search}%");
+                    $query->where(function ($query): void {
+                        $query->where('first_name', 'like', "%{$this->search}%")
+                            ->orWhere('last_name', 'like', "%{$this->search}%")
+                            ->orWhere('phone', 'like', "%{$this->search}%")
+                            ->orWhere('email', 'like', "%{$this->search}%");
+                    });
                 })
                 ->latest()
                 ->paginate(10),

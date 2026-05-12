@@ -4,12 +4,14 @@ namespace App\Livewire\Packages;
 
 use App\Enums\PackageStatus;
 use App\Models\Package;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Index extends Component
 {
+    use AuthorizesRequests;
     use WithPagination;
 
     public string $search = '';
@@ -17,6 +19,11 @@ class Index extends Component
     public string $sortField = 'created_at';
     public string $sortDirection = 'desc';
     public int $perPage = 10;
+
+    public function mount(): void
+    {
+        $this->authorize('viewAny', Package::class);
+    }
 
     public function updatingSearch(): void
     {
@@ -43,6 +50,8 @@ class Index extends Component
     public function delete(int $packageId): void
     {
         $package = Package::query()->visibleFor(Auth::user())->findOrFail($packageId);
+        $this->authorize('delete', $package);
+
         $package->delete();
 
         session()->flash('success', 'Colis supprimé.');

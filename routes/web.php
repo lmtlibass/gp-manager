@@ -42,8 +42,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::view('/notifications', 'notifications.index')->name('notifications.index');
     });
 
-    // Gestion des utilisateurs - Admin et GP Manager uniquement
-    Route::middleware(['role:admin,gp_manager'])->group(function () {
-        Route::resource('users', UserController::class);
+    Route::middleware(['can:manage-users'])->group(function () {
+        Route::view('/users', 'user.index')->name('users.index');
+        Route::view('/users/create', 'user.index')->name('users.create');
+        Route::view('/users/{user}', 'user.index')->name('users.show');
+        Route::view('/users/{user}/edit', 'user.index')->name('users.edit');
     });
 });

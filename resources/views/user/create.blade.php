@@ -1,137 +1,144 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">
-            Créer un nouvel utilisateur
-        </h1>
+<div class="space-y-6">
+
+    {{-- Header --}}
+    <div class="card-panel">
+        <div class="panel-header">
+            <div>
+                <p class="page-eyebrow">Administration</p>
+                <h1 class="page-heading mt-1">Créer un utilisateur</h1>
+                <p class="page-subtitle">Nouveau compte avec rôle et agence.</p>
+            </div>
+            <a href="{{ route('users.index') }}" class="btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i>Retour
+            </a>
+        </div>
     </div>
 
     @if ($errors->any())
-        <div class="rounded-md bg-red-50 p-4 mb-6">
-            <div class="flex">
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">
-                        Il y a des erreurs dans le formulaire
-                    </h3>
-                    <div class="mt-2 text-sm text-red-700">
-                        <ul class="list-disc space-y-1 pl-5">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
+    <div class="flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4">
+        <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0 text-rose-500"></i>
+        <ul class="space-y-1">
+            @foreach ($errors->all() as $error)
+            <li class="text-sm font-medium text-rose-700">{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    <div class="grid gap-6 lg:grid-cols-3">
+
+        {{-- Form --}}
+        <div class="lg:col-span-2">
+            <form method="POST" action="{{ route('users.store') }}" class="card-panel space-y-5">
+                @csrf
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="first_name" class="form-label">Prénom</label>
+                        <input type="text" name="first_name" id="first_name" required
+                            class="form-input {{ $errors->has('first_name') ? 'border-rose-400' : '' }}"
+                            placeholder="Jean" value="{{ old('first_name') }}" />
+                    </div>
+                    <div>
+                        <label for="last_name" class="form-label">Nom</label>
+                        <input type="text" name="last_name" id="last_name" required
+                            class="form-input {{ $errors->has('last_name') ? 'border-rose-400' : '' }}"
+                            placeholder="Dupont" value="{{ old('last_name') }}" />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="form-label">Adresse email</label>
+                    <input type="email" name="email" id="email" required
+                        class="form-input {{ $errors->has('email') ? 'border-rose-400' : '' }}"
+                        placeholder="jean@exemple.com" value="{{ old('email') }}" />
+                </div>
+
+                <div>
+                    <label for="phone" class="form-label">Téléphone</label>
+                    <input type="tel" name="phone" id="phone"
+                        class="form-input"
+                        placeholder="+33 6 00 00 00 00" value="{{ old('phone') }}" />
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="password" class="form-label">Mot de passe</label>
+                        <input type="password" name="password" id="password" required
+                            class="form-input {{ $errors->has('password') ? 'border-rose-400' : '' }}"
+                            placeholder="••••••••" />
+                    </div>
+                    <div>
+                        <label for="password_confirmation" class="form-label">Confirmation</label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" required
+                            class="form-input" placeholder="••••••••" />
+                    </div>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="role" class="form-label">Rôle</label>
+                        <select name="role" id="role" required class="form-select">
+                            <option value="">Sélectionner un rôle</option>
+                            <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="gp_manager" {{ old('role') === 'gp_manager' ? 'selected' : '' }}>GP Manager</option>
+                            <option value="agent" {{ old('role') === 'agent' ? 'selected' : '' }}>Agent</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="agency_id" class="form-label">Agence</label>
+                        <select name="agency_id" id="agency_id" required class="form-select">
+                            <option value="">Sélectionner une agence</option>
+                            @foreach ($agencies as $agency)
+                            <option value="{{ $agency->id }}" {{ old('agency_id') == $agency->id ? 'selected' : '' }}>
+                                {{ $agency->name }}
+                            </option>
                             @endforeach
-                        </ul>
+                        </select>
+                    </div>
+                </div>
+
+                <label class="inline-flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" name="is_active" id="is_active" value="1" checked
+                        class="h-4 w-4 rounded border-slate-300 text-[#0062a3] focus:ring-[#0062a3]" />
+                    <span class="text-sm font-medium text-slate-700">Compte actif dès la création</span>
+                </label>
+
+                <div class="flex gap-3 border-t border-slate-100 pt-5">
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-user-plus"></i>Créer l'utilisateur
+                    </button>
+                    <a href="{{ route('users.index') }}" class="btn-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+
+        {{-- Info sidebar --}}
+        <div>
+            <div class="card-panel">
+                <h3 class="section-title mb-4">
+                    <i class="fa-solid fa-circle-info text-[#FF8F1D] mr-2"></i>Rôles disponibles
+                </h3>
+                <div class="space-y-3">
+                    <div class="rounded-xl bg-slate-50 p-3">
+                        <div class="text-sm font-semibold text-[#001F3D]">Admin</div>
+                        <p class="mt-0.5 text-xs text-slate-500">Accès total à toutes les agences et fonctionnalités.</p>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 p-3">
+                        <div class="text-sm font-semibold text-[#001F3D]">GP Manager</div>
+                        <p class="mt-0.5 text-xs text-slate-500">Gestion complète de son agence : colis, clients, utilisateurs.</p>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 p-3">
+                        <div class="text-sm font-semibold text-[#001F3D]">Agent</div>
+                        <p class="mt-0.5 text-xs text-slate-500">Consultation et mise à jour des colis, traitement des retraits.</p>
                     </div>
                 </div>
             </div>
         </div>
-    @endif
 
-    <div class="bg-white shadow rounded-lg">
-        <form method="POST" action="{{ route('user.store') }}" class="space-y-6 px-4 py-5 sm:p-6">
-            @csrf
-
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                    <label for="first_name" class="block text-sm font-medium text-gray-700">
-                        Prénom
-                    </label>
-                    <input type="text" name="first_name" id="first_name" required
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        value="{{ old('first_name') }}" />
-                </div>
-
-                <div>
-                    <label for="last_name" class="block text-sm font-medium text-gray-700">
-                        Nom
-                    </label>
-                    <input type="text" name="last_name" id="last_name" required
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        value="{{ old('last_name') }}" />
-                </div>
-            </div>
-
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">
-                    Email
-                </label>
-                <input type="email" name="email" id="email" required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value="{{ old('email') }}" />
-            </div>
-
-            <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700">
-                    Téléphone
-                </label>
-                <input type="tel" name="phone" id="phone"
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value="{{ old('phone') }}" />
-            </div>
-
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">
-                        Mot de passe
-                    </label>
-                    <input type="password" name="password" id="password" required
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                </div>
-
-                <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">
-                        Confirmer le mot de passe
-                    </label>
-                    <input type="password" name="password_confirmation" id="password_confirmation" required
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                </div>
-            </div>
-
-            <div>
-                <label for="role" class="block text-sm font-medium text-gray-700">
-                    Rôle
-                </label>
-                <select name="role" id="role" required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    <option value="">Sélectionner un rôle</option>
-                    <option value="admin">Admin</option>
-                    <option value="gp_manager">GP Manager</option>
-                    <option value="agent">Agent</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="agency_id" class="block text-sm font-medium text-gray-700">
-                    Agence
-                </label>
-                <select name="agency_id" id="agency_id" required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    <option value="">Sélectionner une agence</option>
-                    @foreach ($agencies as $agency)
-                        <option value="{{ $agency->id }}">{{ $agency->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="flex items-center">
-                <input type="checkbox" name="is_active" id="is_active" value="1" checked
-                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                <label for="is_active" class="ml-2 block text-sm text-gray-900">
-                    Utilisateur actif
-                </label>
-            </div>
-
-            <div class="flex gap-3">
-                <button type="submit"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Créer l'utilisateur
-                </button>
-                <a href="{{ route('user.index') }}"
-                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Annuler
-                </a>
-            </div>
-        </form>
     </div>
 </div>
 @endsection

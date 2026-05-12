@@ -6,6 +6,7 @@ use App\Enums\NotificationChannel;
 use App\Enums\NotificationStatus;
 use App\Models\Package;
 use App\Models\PackageNotification;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 
 class Index extends Component
 {
+    use AuthorizesRequests;
     use WithPagination;
 
     public string $search = '';
@@ -21,6 +23,11 @@ class Index extends Component
     public string $recipient_phone = '';
     public string $message = '';
     public string $status = 'pending';
+
+    public function mount(): void
+    {
+        $this->authorize('viewAny', Package::class);
+    }
 
     public function create(): void
     {
@@ -36,6 +43,8 @@ class Index extends Component
 
             return;
         }
+
+        $this->authorize('view', $package);
 
         PackageNotification::query()->create([
             'package_id' => $package->id,

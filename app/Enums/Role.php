@@ -2,6 +2,9 @@
 
 namespace App\Enums;
 
+/**
+ * @deprecated Use UserRoleEnum.
+ */
 enum Role: string
 {
     case Admin = 'admin';

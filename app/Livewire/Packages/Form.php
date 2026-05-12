@@ -3,8 +3,10 @@
 namespace App\Livewire\Packages;
 
 use App\Enums\PackageStatus;
+use App\Enums\UserRoleEnum;
 use App\Models\Customer;
 use App\Models\Package;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -12,6 +14,8 @@ use Livewire\Component;
 
 class Form extends Component
 {
+    use AuthorizesRequests;
+
     public ?Package $package = null;
 
     public int|string|null $sender_id = null;
@@ -30,7 +34,7 @@ class Form extends Component
     {
         if ($package?->exists) {
             $this->package = $package;
-            $this->authorizePackage($package);
+            $this->authorize('update', $package);
 
             $this->sender_id = $package->sender_id;
             $this->receiver_id = $package->receiver_id;
@@ -44,12 +48,17 @@ class Form extends Component
             $this->notes = $package->notes ?? '';
             $this->status = $package->status->value;
         }
+
+        if (! $this->package?->exists) {
+            $this->authorize('create', Package::class);
+        }
     }
 
     public function save(): void
     {
         $data = $this->validate();
         $user = Auth::user();
+        $this->authorize($this->package?->exists ? 'update' : 'create', $this->package ?: Package::class);
 
         DB::transaction(function () use ($data, $user): void {
             if ($this->package?->exists) {
@@ -91,16 +100,16 @@ class Form extends Component
     public function render()
     {
         return view('livewire.packages.form', [
-            'customers' => Customer::query()->orderBy('first_name')->orderBy('last_name')->get(),
-            'statuses' => PackageStatus::cases(),
+            'customers' => Customer::query()->visibleFor(Auth::user())->orderBy('first_name')->orderBy('last_name')->get(),
+            'statuses' => $this->availableStatuses(),
         ]);
     }
 
     protected function rules(): array
     {
         return [
-            'sender_id' => ['required', 'integer', Rule::exists('customers', 'id')],
-            'receiver_id' => ['required', 'integer', Rule::exists('customers', 'id'), 'different:sender_id'],
+            'sender_id' => ['required', 'integer', $this->customerExistsRule()],
+            'receiver_id' => ['required', 'integer', $this->customerExistsRule(), 'different:sender_id'],
             'package_name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'weight' => ['nullable', 'numeric', 'min:0', 'max:999999.99'],
@@ -108,7 +117,7 @@ class Form extends Component
             'declared_value' => ['nullable', 'numeric', 'min:0', 'max:9999999999.99'],
             'origin_country' => ['required', 'string', 'max:120'],
             'destination_country' => ['required', 'string', 'max:120'],
-            'status' => ['required', Rule::enum(PackageStatus::class)],
+            'status' => ['required', Rule::in(array_map(fn (PackageStatus $status) => $status->value, $this->availableStatuses()))],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }
@@ -123,10 +132,28 @@ class Form extends Component
         ]);
     }
 
-    private function authorizePackage(Package $package): void
+    private function availableStatuses(): array
     {
-        if (Auth::user()->role->value !== 'admin' && $package->agency_id !== Auth::user()->agency_id) {
-            abort(403);
+        if (Auth::user()->role !== UserRoleEnum::Agent) {
+            return PackageStatus::cases();
         }
+
+        return [
+            PackageStatus::Received,
+            PackageStatus::InTransit,
+            PackageStatus::Arrived,
+            PackageStatus::ReadyForPickup,
+        ];
+    }
+
+    private function customerExistsRule()
+    {
+        $rule = Rule::exists('customers', 'id');
+
+        if (Auth::user()->role !== UserRoleEnum::Admin) {
+            $rule->where('agency_id', Auth::user()->agency_id);
+        }
+
+        return $rule;
     }
 }
