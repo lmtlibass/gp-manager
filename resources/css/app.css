@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap');
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -7,18 +7,19 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Inter', 'Nunito', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --color-primary: #001F3D;
     --color-secondary: #0062a3;
     --color-accent: #FF8F1D;
-    --color-surface: #f0f4f8;
+    --color-surface: #f5f7fa;
     --color-card: #ffffff;
-    --color-success: #166534;
-    --color-warning: #b45309;
-    --color-danger: #be123c;
+    --color-success: #059669;
+    --color-warning: #d97706;
+    --color-danger: #e11d48;
     --color-info: #0062a3;
-    --shadow-soft: 0 1px 3px rgba(0,31,61,0.08), 0 4px 16px rgba(0,31,61,0.06);
-    --shadow-card: 0 1px 2px rgba(0,31,61,0.06), 0 2px 8px rgba(0,31,61,0.04);
+    --shadow-soft: 0 4px 24px rgba(0,31,61,0.10), 0 1px 4px rgba(0,31,61,0.06);
+    --shadow-card: 0 1px 3px rgba(0,31,61,0.06), 0 2px 10px rgba(0,31,61,0.04);
+    --shadow-up: 0 -4px 24px rgba(0,31,61,0.08);
 }
 
 @layer base {
@@ -42,50 +43,72 @@
     }
 
     ::selection {
-        background: rgba(255,143,29,0.25);
+        background: rgba(255,143,29,0.22);
         color: #001F3D;
     }
 }
 
 @layer components {
 
-    /* ── Buttons ───────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════════════════ */
+
     .btn-primary {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-[#001F3D] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#002d5a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#001F3D]/40 active:scale-[.98];
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-[#001F3D] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-[#002d5a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#001F3D]/40 active:scale-[.97];
     }
 
     .btn-secondary {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 active:scale-[.98];
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 active:scale-[.97];
     }
 
     .btn-accent {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF8F1D] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#e67e10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF8F1D]/40 active:scale-[.98];
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF8F1D] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-[#e67e10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF8F1D]/40 active:scale-[.97];
     }
 
     .btn-danger {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-400/30 active:scale-[.98];
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-400/30 active:scale-[.97];
     }
 
     .btn-success {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-400/30 active:scale-[.98];
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-400/30 active:scale-[.97];
     }
 
-    /* ── Cards & Panels ────────────────────────── */
+    .btn-icon {
+        @apply inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-card transition-all duration-150 hover:bg-slate-50 hover:text-slate-700 hover:border-slate-300 active:scale-[.95];
+    }
+
+    .btn-icon-danger {
+        @apply inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 shadow-card transition-all duration-150 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 active:scale-[.95];
+    }
+
+    /* ══════════════════════════════════════════════
+       CARDS & PANELS
+    ══════════════════════════════════════════════ */
+
     .card-panel {
-        @apply rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card;
+        @apply rounded-2xl border border-slate-200/60 bg-white p-6 shadow-card;
     }
 
     .card-sm {
-        @apply rounded-xl border border-slate-200/70 bg-white p-4 shadow-card;
+        @apply rounded-xl border border-slate-200/60 bg-white p-4 shadow-card;
     }
 
-    .page-section {
-        @apply rounded-2xl bg-white/95 p-6 shadow-card;
+    /* Package / item card — used in list views */
+    .pkg-card {
+        @apply rounded-2xl border border-slate-200/60 bg-white p-4 shadow-card transition-all duration-150 hover:shadow-soft hover:border-slate-300/80 cursor-pointer;
     }
 
-    /* ── Typography ────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       PAGE HEADERS — simplified, no heavy card
+    ══════════════════════════════════════════════ */
+
+    .page-header {
+        @apply flex flex-col gap-3 pb-2 sm:flex-row sm:items-center sm:justify-between;
+    }
+
     .page-eyebrow {
-        @apply text-xs font-semibold uppercase tracking-[0.28em] text-slate-400;
+        @apply text-xs font-semibold uppercase tracking-[0.22em] text-slate-400/80;
     }
 
     .page-heading {
@@ -93,57 +116,74 @@
     }
 
     .page-subtitle {
-        @apply mt-1.5 text-sm text-slate-500;
+        @apply mt-1 text-sm text-slate-500;
     }
 
     .section-title {
-        @apply text-lg font-semibold text-slate-900;
+        @apply text-base font-semibold text-slate-800;
     }
 
     .panel-header {
         @apply flex flex-col gap-4 md:flex-row md:items-center md:justify-between;
     }
 
-    /* ── Forms ─────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       FORMS — human, readable, not technical
+    ══════════════════════════════════════════════ */
+
     .form-label {
-        @apply block text-xs font-semibold uppercase tracking-[0.1em] text-slate-500 mb-1.5;
+        @apply block text-sm font-medium text-slate-700 mb-1.5;
     }
 
     .form-input {
-        @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#0062a3] focus:outline-none focus:ring-2 focus:ring-[#0062a3]/15;
+        @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition-all duration-150 placeholder:text-slate-400 focus:border-[#0062a3] focus:outline-none focus:ring-2 focus:ring-[#0062a3]/20 hover:border-slate-300;
     }
 
-    /* alias — used in login.blade.php */
+    /* alias used in login */
     .input-field {
-        @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#0062a3] focus:outline-none focus:ring-2 focus:ring-[#0062a3]/15;
+        @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition-all duration-150 placeholder:text-slate-400 focus:border-[#0062a3] focus:outline-none focus:ring-2 focus:ring-[#0062a3]/20 hover:border-slate-300;
     }
 
     .form-select {
-        @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-all focus:border-[#0062a3] focus:outline-none focus:ring-2 focus:ring-[#0062a3]/15;
+        @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition-all duration-150 focus:border-[#0062a3] focus:outline-none focus:ring-2 focus:ring-[#0062a3]/20 hover:border-slate-300;
+    }
+
+    .form-textarea {
+        @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition-all duration-150 placeholder:text-slate-400 focus:border-[#0062a3] focus:outline-none focus:ring-2 focus:ring-[#0062a3]/20 hover:border-slate-300 resize-none;
     }
 
     .form-error {
-        @apply mt-1.5 text-xs font-medium text-rose-600;
+        @apply mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-600;
     }
 
-    /* ── Tables ────────────────────────────────── */
+    /* Input with leading icon — wrap in .field-wrap and add pl-11 */
+    .field-wrap {
+        @apply relative;
+    }
+    .field-icon {
+        @apply pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400 text-sm;
+    }
+
+    /* ══════════════════════════════════════════════
+       TABLES — kept for dense data
+    ══════════════════════════════════════════════ */
+
     .table-surface {
         @apply min-w-full divide-y divide-slate-100 text-sm;
     }
 
     .table-header {
-        @apply whitespace-nowrap bg-[#001F3D] text-left text-xs font-semibold uppercase tracking-[0.14em] text-slate-300 px-4 py-3;
-    }
-
-    .table-header:first-child {
-        @apply rounded-tl-none;
+        @apply whitespace-nowrap bg-slate-50 text-left text-xs font-semibold text-slate-500 px-4 py-3 border-b border-slate-200;
     }
 
     .table-row-hover {
         @apply transition-colors hover:bg-slate-50/70;
     }
 
-    /* ── Badges ────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       BADGES
+    ══════════════════════════════════════════════ */
+
     .badge,
     .badge-info,
     .badge-success,
@@ -151,66 +191,87 @@
     .badge-danger,
     .badge-neutral,
     .badge-accent {
-        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold;
+        @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
     }
 
-    .badge-info    { @apply bg-[#e8f1fa] text-[#0062a3]; }
-    .badge-success { @apply bg-emerald-50 text-emerald-700; }
-    .badge-warning { @apply bg-amber-50 text-amber-700; }
-    .badge-danger  { @apply bg-rose-50 text-rose-700; }
-    .badge-neutral { @apply bg-slate-100 text-slate-600; }
-    .badge-accent  { @apply bg-orange-50 text-orange-700; }
+    .badge-info    { @apply bg-blue-50 text-blue-700 ring-1 ring-blue-200/70; }
+    .badge-success { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/70; }
+    .badge-warning { @apply bg-amber-50 text-amber-700 ring-1 ring-amber-200/70; }
+    .badge-danger  { @apply bg-rose-50 text-rose-700 ring-1 ring-rose-200/70; }
+    .badge-neutral { @apply bg-slate-100 text-slate-600 ring-1 ring-slate-200/70; }
+    .badge-accent  { @apply bg-orange-50 text-orange-700 ring-1 ring-orange-200/70; }
 
-    /* ── Sidebar ───────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════════ */
+
     .sidebar-link {
-        @apply flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-slate-400 transition-all duration-150;
+        @apply flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-400 transition-all duration-150;
     }
 
     .sidebar-link:hover {
-        background-color: rgba(255,255,255,0.07);
+        background-color: rgba(255,255,255,0.08);
         color: #e2e8f0;
     }
 
     .sidebar-link.active {
-        @apply bg-[#0062a3]/90 text-white shadow-sm;
+        background-color: rgba(255,255,255,0.12);
+        @apply text-white;
     }
 
     .sidebar-link .sidebar-icon {
-        @apply flex h-8 w-8 items-center justify-center rounded-lg text-sm transition-all;
+        @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm transition-all;
     }
 
     .sidebar-link.active .sidebar-icon {
-        background-color: rgba(255,255,255,0.15);
-        color: #FF8F1D;
+        @apply bg-[#FF8F1D] text-white;
     }
 
     .sidebar-link:not(.active) .sidebar-icon {
         @apply text-slate-500;
     }
 
-    .sidebar-link:hover .sidebar-icon {
-        color: #94a3b8;
+    .sidebar-link:hover:not(.active) .sidebar-icon {
+        @apply text-slate-300;
     }
 
-    /* ── Mobile bottom nav ─────────────────────── */
+    /* ══════════════════════════════════════════════
+       MOBILE BOTTOM NAV
+    ══════════════════════════════════════════════ */
+
     .mobile-bottom-link {
-        @apply inline-flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-[#001F3D];
+        @apply inline-flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[11px] font-medium text-slate-500 transition-all duration-150 hover:text-[#001F3D];
     }
 
     .mobile-bottom-link.active {
         @apply text-[#0062a3];
     }
 
-    /* ── Stat Cards ────────────────────────────── */
+    .mobile-bottom-link.active i {
+        @apply text-[#FF8F1D];
+    }
+
+    /* ══════════════════════════════════════════════
+       STAT CARDS — dashboard KPIs
+    ══════════════════════════════════════════════ */
+
     .stat-card {
-        @apply rounded-2xl border border-slate-200/70 bg-white p-5 shadow-card transition-all hover:shadow-soft;
+        @apply rounded-2xl border border-slate-200/60 bg-white p-5 shadow-card transition-all duration-200 hover:shadow-soft;
     }
 
     .stat-card-dark {
-        @apply rounded-2xl bg-[#001F3D] p-5 text-white shadow-card;
+        @apply rounded-2xl bg-[#001F3D] p-5 text-white shadow-card transition-all duration-200 hover:shadow-soft;
     }
 
-    /* ── Alert banners ─────────────────────────── */
+    /* Colored icon bubble inside stat cards */
+    .stat-icon {
+        @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-base;
+    }
+
+    /* ══════════════════════════════════════════════
+       ALERTS
+    ══════════════════════════════════════════════ */
+
     .alert-success {
         @apply mb-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4;
     }
@@ -219,18 +280,45 @@
         @apply mb-6 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4;
     }
 
-    /* ── Timeline ──────────────────────────────── */
+    .alert-info {
+        @apply mb-6 flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4;
+    }
+
+    /* ══════════════════════════════════════════════
+       TIMELINE
+    ══════════════════════════════════════════════ */
+
     .timeline-item {
-        @apply relative pl-5 before:absolute before:left-0 before:top-1.5 before:h-2 before:w-2 before:rounded-full before:bg-[#0062a3] before:content-[''];
+        @apply relative pl-5 before:absolute before:left-0 before:top-2 before:h-2 before:w-2 before:rounded-full before:bg-[#0062a3] before:content-[''];
     }
 
     .timeline-item::after {
         content: '';
-        @apply absolute bottom-0 left-[3px] top-5 w-px bg-slate-100;
+        @apply absolute bottom-0 left-[3px] top-6 w-px bg-slate-100;
     }
 
     .timeline-item:last-child::after {
         display: none;
+    }
+
+    /* ══════════════════════════════════════════════
+       DETAIL LIST (show pages)
+    ══════════════════════════════════════════════ */
+
+    .detail-label {
+        @apply text-xs font-medium text-slate-500 mb-0.5;
+    }
+
+    .detail-value {
+        @apply text-sm font-semibold text-slate-900;
+    }
+
+    /* ══════════════════════════════════════════════
+       SEARCH INPUT HERO (withdrawals)
+    ══════════════════════════════════════════════ */
+
+    .input-hero {
+        @apply w-full rounded-2xl border-2 border-slate-200 bg-white px-5 py-4 text-lg font-semibold text-slate-900 shadow-soft transition-all duration-150 placeholder:text-slate-400 placeholder:font-normal focus:border-[#0062a3] focus:outline-none focus:ring-4 focus:ring-[#0062a3]/15 tracking-widest uppercase;
     }
 }
 
@@ -241,5 +329,9 @@
 
     .shadow-card {
         box-shadow: var(--shadow-card);
+    }
+
+    .shadow-up {
+        box-shadow: var(--shadow-up);
     }
 }

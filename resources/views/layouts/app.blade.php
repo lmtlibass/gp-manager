@@ -192,7 +192,7 @@ use Illuminate\Support\Facades\Auth;
         <span>Colis</span>
     </a>
     <a href="{{ route('withdrawals.process') }}" class="mobile-bottom-link {{ request()->routeIs('withdrawals.*') ? 'active' : '' }}">
-        <i class="fa-solid fa-hand-holding-box text-base"></i>
+        <i class="fa-solid fa-hand-holding text-base"></i>
         <span>Retraits</span>
     </a>
     <a href="{{ route('customers.index') }}" class="mobile-bottom-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
@@ -211,6 +211,11 @@ use Illuminate\Support\Facades\Auth;
     @yield('content')
 </main>
 @endif
+
+{{-- Voice Command Assistant — floating widget, visible for authenticated users only --}}
+@auth
+<livewire:voice-command.assistant />
+@endauth
 
 </div>
 @livewireScripts

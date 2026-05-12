@@ -2,58 +2,109 @@
 use Illuminate\Support\Facades\Auth;
 
 $statItems = [
-    ['label' => 'Total colis',    'value' => $stats['total'],            'icon' => 'fa-box',             'accent' => '#FF8F1D', 'dark' => true],
-    ['label' => 'Reçus',          'value' => $stats['received'],         'icon' => 'fa-inbox',           'accent' => '#0062a3', 'dark' => false],
-    ['label' => 'En transit',     'value' => $stats['in_transit'],       'icon' => 'fa-truck-moving',    'accent' => '#FF8F1D', 'dark' => false],
-    ['label' => 'Arrivés',        'value' => $stats['arrived'],          'icon' => 'fa-map-pin',         'accent' => '#0062a3', 'dark' => false],
-    ['label' => 'Prêts',          'value' => $stats['ready_for_pickup'], 'icon' => 'fa-hand-holding-box','accent' => '#7c3aed', 'dark' => false],
-    ['label' => 'Livrés',         'value' => $stats['delivered'],        'icon' => 'fa-circle-check',    'accent' => '#166534', 'dark' => false],
+    [
+        'label'   => 'Total colis',
+        'value'   => $stats['total'],
+        'icon'    => 'fa-box',
+        'bg'      => 'bg-[#001F3D]',
+        'icon_bg' => 'bg-[#FF8F1D]',
+        'icon_c'  => 'text-white',
+        'val_c'   => 'text-white',
+        'lbl_c'   => 'text-slate-300',
+    ],
+    [
+        'label'   => 'Reçus',
+        'value'   => $stats['received'],
+        'icon'    => 'fa-inbox',
+        'bg'      => 'bg-white',
+        'icon_bg' => 'bg-blue-100',
+        'icon_c'  => 'text-blue-600',
+        'val_c'   => 'text-[#001F3D]',
+        'lbl_c'   => 'text-slate-500',
+    ],
+    [
+        'label'   => 'En transit',
+        'value'   => $stats['in_transit'],
+        'icon'    => 'fa-truck-moving',
+        'bg'      => 'bg-white',
+        'icon_bg' => 'bg-amber-100',
+        'icon_c'  => 'text-amber-600',
+        'val_c'   => 'text-[#001F3D]',
+        'lbl_c'   => 'text-slate-500',
+    ],
+    [
+        'label'   => 'Arrivés',
+        'value'   => $stats['arrived'],
+        'icon'    => 'fa-map-pin',
+        'bg'      => 'bg-white',
+        'icon_bg' => 'bg-violet-100',
+        'icon_c'  => 'text-violet-600',
+        'val_c'   => 'text-[#001F3D]',
+        'lbl_c'   => 'text-slate-500',
+    ],
+    [
+        'label'   => 'Prêts',
+        'value'   => $stats['ready_for_pickup'],
+        'icon'    => 'fa-hand-holding-box',
+        'bg'      => 'bg-white',
+        'icon_bg' => 'bg-orange-100',
+        'icon_c'  => 'text-orange-600',
+        'val_c'   => 'text-[#001F3D]',
+        'lbl_c'   => 'text-slate-500',
+    ],
+    [
+        'label'   => 'Livrés',
+        'value'   => $stats['delivered'],
+        'icon'    => 'fa-circle-check',
+        'bg'      => 'bg-white',
+        'icon_bg' => 'bg-emerald-100',
+        'icon_c'  => 'text-emerald-600',
+        'val_c'   => 'text-[#001F3D]',
+        'lbl_c'   => 'text-slate-500',
+    ],
 ];
 @endphp
 
-<div class="space-y-6">
+<div class="space-y-7">
 
     {{-- Page header --}}
-    <div class="card-panel">
-        <div class="panel-header">
-            <div>
-                <p class="page-eyebrow">Tableau de bord</p>
-                <h1 class="page-heading mt-1">Performance logistique</h1>
-                <p class="page-subtitle">
-                    <i class="fa-solid fa-building-columns text-[#FF8F1D] mr-1.5"></i>
-                    {{ Auth::user()->agency->name ?? 'Toutes agences' }}
-                    <span class="mx-2 text-slate-300">·</span>
-                    {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
-                </p>
-            </div>
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <select wire:model.live="scope"
-                    class="form-select rounded-xl border-slate-200 text-sm max-w-[180px]">
-                    <option value="agency">Vue agence</option>
-                    <option value="mine">Mes colis</option>
-                </select>
-                <a href="{{ route('packages.create') }}" class="btn-primary">
-                    <i class="fa-solid fa-plus"></i>Créer un colis
-                </a>
-            </div>
+    <div class="page-header">
+        <div>
+            <h1 class="page-heading">Tableau de bord</h1>
+            <p class="page-subtitle">
+                <i class="fa-solid fa-building-columns text-[#FF8F1D] mr-1.5"></i>
+                {{ Auth::user()->agency->name ?? 'Toutes agences' }}
+                <span class="mx-2 text-slate-300">·</span>
+                {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+            </p>
+        </div>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <select wire:model.live="scope"
+                class="form-select max-w-[200px] py-2.5 text-sm">
+                <option value="agency">Vue agence</option>
+                <option value="mine">Mes colis</option>
+            </select>
+            <a href="{{ route('packages.create') }}" class="btn-primary">
+                <i class="fa-solid fa-plus"></i>Nouveau colis
+            </a>
         </div>
     </div>
 
     {{-- KPI cards --}}
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+    <div class="grid gap-4 grid-cols-2 sm:grid-cols-3 xl:grid-cols-6">
         @foreach ($statItems as $item)
-        <div class="stat-card {{ $item['dark'] ? 'bg-[#001F3D] border-[#001F3D]' : '' }} flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl {{ $item['dark'] ? 'bg-white/10' : 'bg-slate-50' }}">
-                    <i class="fa-solid {{ $item['icon'] }} text-sm" style="color: {{ $item['accent'] }}"></i>
-                </span>
-                <span class="text-xs font-semibold uppercase tracking-[0.18em] {{ $item['dark'] ? 'text-slate-400' : 'text-slate-400' }}">
-                    {{ $item['label'] }}
-                </span>
+        <div class="stat-card {{ $item['bg'] }} border-slate-200/60 flex flex-col gap-4">
+            <div class="stat-icon {{ $item['icon_bg'] }} {{ $item['icon_c'] }}">
+                <i class="fa-solid {{ $item['icon'] }}"></i>
             </div>
-            <p class="text-4xl font-bold tracking-tight {{ $item['dark'] ? 'text-white' : 'text-[#001F3D]' }}">
-                {{ $item['value'] }}
-            </p>
+            <div>
+                <p class="text-3xl font-extrabold tracking-tight {{ $item['val_c'] }}">
+                    {{ $item['value'] }}
+                </p>
+                <p class="mt-0.5 text-xs font-medium {{ $item['lbl_c'] }}">
+                    {{ $item['label'] }}
+                </p>
+            </div>
         </div>
         @endforeach
     </div>
@@ -61,87 +112,81 @@ $statItems = [
     {{-- Main content grid --}}
     <div class="grid gap-6 lg:grid-cols-3">
 
-        {{-- Latest packages table --}}
-        <div class="lg:col-span-2 card-panel">
-            <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                <div>
-                    <h2 class="section-title">Derniers colis</h2>
-                    <p class="mt-0.5 text-sm text-slate-500">Mouvements récents de votre agence.</p>
-                </div>
-                <a href="{{ route('packages.index') }}" class="btn-secondary text-xs">
-                    Voir tous <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+        {{-- Latest packages --}}
+        <div class="lg:col-span-2 space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-base font-semibold text-slate-800">
+                    <i class="fa-solid fa-boxes-stacked text-[#FF8F1D] mr-2"></i>Derniers colis
+                </h2>
+                <a href="{{ route('packages.index') }}" class="text-sm font-medium text-[#0062a3] hover:text-[#004e7b] transition-colors">
+                    Voir tous <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
                 </a>
             </div>
 
-            <div class="mt-4 overflow-x-auto">
-                <table class="table-surface w-full">
-                    <thead>
-                        <tr>
-                            <th class="table-header rounded-tl-xl">Numéro</th>
-                            <th class="table-header">Destinataire</th>
-                            <th class="table-header">Destination</th>
-                            <th class="table-header rounded-tr-xl">Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @forelse ($latestPackages as $package)
-                        <tr class="table-row-hover">
-                            <td class="px-4 py-3.5">
-                                <a href="{{ route('packages.show', $package) }}"
-                                    class="font-semibold text-[#0062a3] hover:text-[#004e7b] transition-colors">
-                                    {{ $package->tracking_number }}
-                                </a>
-                                <div class="mt-0.5 text-xs text-slate-400">{{ optional($package->sender)->full_name ?? '—' }}</div>
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-slate-700">
-                                {{ $package->receiver->full_name }}
-                                <div class="text-xs text-slate-400">{{ $package->receiver->phone }}</div>
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-slate-600">{{ $package->destination_country }}</td>
-                            <td class="px-4 py-3.5">
-                                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $package->status->badgeClasses() }}">
-                                    {{ $package->status->label() }}
-                                </span>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="px-4 py-10 text-center">
-                                <i class="fa-solid fa-box-open text-3xl text-slate-200 block mb-2"></i>
-                                <span class="text-sm text-slate-400">Aucun colis enregistré.</span>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            @forelse ($latestPackages as $package)
+            <a href="{{ route('packages.show', $package) }}" class="pkg-card flex items-center gap-4 no-underline block">
+                <div class="stat-icon bg-slate-100 text-slate-500 shrink-0">
+                    <i class="fa-solid fa-box text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="font-semibold text-[#001F3D] text-sm">{{ $package->tracking_number }}</span>
+                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset {{ $package->status->badgeClasses() }}">
+                            {{ $package->status->label() }}
+                        </span>
+                    </div>
+                    <div class="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs text-slate-500">
+                        <span>{{ optional($package->sender)->full_name ?? '—' }}</span>
+                        <i class="fa-solid fa-arrow-right text-[#FF8F1D]"></i>
+                        <span class="font-medium text-slate-700">{{ $package->receiver->full_name }}</span>
+                        <span class="text-slate-400">{{ $package->destination_country }}</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-300 shrink-0"></i>
+            </a>
+            @empty
+            <div class="card-panel flex flex-col items-center justify-center py-12 text-center">
+                <div class="stat-icon bg-slate-100 text-slate-300 mb-3">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <p class="text-sm text-slate-400">Aucun colis enregistré.</p>
             </div>
+            @endforelse
         </div>
 
         {{-- Activity feed --}}
         <div class="card-panel">
-            <div class="border-b border-slate-100 pb-4">
-                <h2 class="section-title">Activités récentes</h2>
-                <p class="mt-0.5 text-sm text-slate-500">Dernières mises à jour de statut.</p>
+            <div class="flex items-center gap-2 border-b border-slate-100 pb-4 mb-4">
+                <div class="stat-icon bg-[#FF8F1D]/10 text-[#FF8F1D] shrink-0" style="width:2.25rem;height:2.25rem;border-radius:0.75rem;font-size:0.875rem;">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-800">Activités récentes</h2>
+                    <p class="text-xs text-slate-400">Dernières mises à jour</p>
+                </div>
             </div>
-            <div class="mt-4 space-y-0">
+
+            <div class="space-y-0">
                 @forelse ($recentHistories as [$package, $history])
                 <div class="timeline-item pb-4">
                     <a href="{{ route('packages.show', $package) }}"
                         class="text-sm font-semibold text-[#0062a3] hover:underline">
                         {{ $package->tracking_number }}
                     </a>
-                    <p class="mt-0.5 text-sm text-slate-600">
-                        {{ $history->old_status ?: 'Création' }}
-                        <i class="fa-solid fa-arrow-right mx-1 text-[#FF8F1D] text-xs"></i>
-                        {{ $history->new_status }}
+                    <p class="mt-0.5 text-xs text-slate-600">
+                        <span class="text-slate-400">{{ $history->old_status ?: 'Création' }}</span>
+                        <i class="fa-solid fa-arrow-right mx-1 text-[#FF8F1D] text-[10px]"></i>
+                        <span class="font-medium text-slate-700">{{ $history->new_status }}</span>
                     </p>
-                    <p class="mt-1 text-xs text-slate-400">
-                        {{ $history->user->first_name ?? 'Système' }} &middot;
-                        {{ $history->created_at->format('d/m/Y H:i') }}
+                    <p class="mt-0.5 text-xs text-slate-400">
+                        {{ $history->user->first_name ?? 'Système' }} · {{ $history->created_at->format('d/m H:i') }}
                     </p>
                 </div>
                 @empty
-                <p class="py-6 text-center text-sm text-slate-400">Aucune activité récente.</p>
+                <div class="flex flex-col items-center py-8 text-center">
+                    <i class="fa-solid fa-bell-slash text-2xl text-slate-200 mb-2"></i>
+                    <p class="text-sm text-slate-400">Aucune activité récente.</p>
+                </div>
                 @endforelse
             </div>
         </div>

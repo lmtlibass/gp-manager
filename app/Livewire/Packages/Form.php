@@ -4,12 +4,14 @@ namespace App\Livewire\Packages;
 
 use App\Enums\PackageStatus;
 use App\Enums\UserRoleEnum;
+use App\Enums\VoiceIntentEnum;
 use App\Models\Customer;
 use App\Models\Package;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Form extends Component
@@ -51,6 +53,38 @@ class Form extends Component
 
         if (! $this->package?->exists) {
             $this->authorize('create', Package::class);
+        }
+
+        // Pre-fill from voice command stored in session
+        if (! $this->package?->exists) {
+            $key = VoiceIntentEnum::CreatePackage->sessionKey();
+            if ($voiceData = session()->pull($key)) {
+                $this->applyVoiceData($voiceData);
+            }
+        }
+    }
+
+    /** Pre-fill form fields from a voice command result array. */
+    #[On('voice-command-applied')]
+    public function onVoiceCommandApplied(string $intent, array $data): void
+    {
+        if ($intent === VoiceIntentEnum::CreatePackage->value) {
+            $this->applyVoiceData($data);
+        }
+    }
+
+    public function applyVoiceData(array $data): void
+    {
+        $fields = [
+            'package_name', 'weight', 'quantity', 'declared_value',
+            'origin_country', 'destination_country', 'description', 'notes',
+            'sender_id', 'receiver_id', 'status',
+        ];
+
+        foreach ($fields as $field) {
+            if (isset($data[$field]) && $data[$field] !== null && $data[$field] !== '') {
+                $this->$field = $data[$field];
+            }
         }
     }
 

@@ -1,128 +1,126 @@
 <div class="space-y-6">
 
-    {{-- Header --}}
-    <div class="card-panel">
-        <div class="panel-header">
-            <div>
-                <p class="page-eyebrow">Logistique</p>
-                <h1 class="page-heading mt-1">Colis</h1>
-                <p class="page-subtitle">Création, suivi et mise à jour des statuts.</p>
-            </div>
-            <a href="{{ route('packages.create') }}" class="btn-primary">
-                <i class="fa-solid fa-plus"></i>Créer un colis
-            </a>
+    {{-- Page header --}}
+    <div class="page-header">
+        <div>
+            <h1 class="page-heading">
+                <i class="fa-solid fa-box-open text-accent mr-2"></i>Colis
+            </h1>
+            <p class="page-subtitle">Création, suivi et mise à jour des statuts.</p>
         </div>
+        <a href="{{ route('packages.create') }}" class="btn-primary">
+            <i class="fa-solid fa-plus"></i>Nouveau colis
+        </a>
     </div>
 
-    {{-- Table card --}}
-    <div class="card-panel space-y-0">
-
-        {{-- Filters --}}
-        <div class="grid gap-3 border-b border-slate-100 pb-5 md:grid-cols-4">
-            <div class="relative md:col-span-2">
-                <span class="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400">
-                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                </span>
+    {{-- Filters --}}
+    <div class="card-panel p-4">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="field-wrap sm:col-span-2 lg:col-span-2">
+                <span class="field-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
                 <input wire:model.live.debounce.300ms="search" type="search"
                     placeholder="Tracking, code retrait, client, téléphone…"
-                    class="form-input pl-10">
+                    class="form-input pl-10 py-2.5">
             </div>
-            <select wire:model.live="status" class="form-select">
+            <select wire:model.live="status" class="form-select py-2.5">
                 <option value="">Tous les statuts</option>
                 @foreach ($statuses as $statusOption)
                     <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
                 @endforeach
             </select>
-            <select wire:model.live="perPage" class="form-select">
-                <option value="10">10 par page</option>
-                <option value="25">25 par page</option>
-                <option value="50">50 par page</option>
+            <select wire:model.live="perPage" class="form-select py-2.5">
+                <option value="10">10 résultats</option>
+                <option value="25">25 résultats</option>
+                <option value="50">50 résultats</option>
             </select>
         </div>
-
-        {{-- Table --}}
-        <div class="mt-5 overflow-x-auto">
-            <table class="table-surface w-full">
-                <thead>
-                    <tr>
-                        <th class="table-header">
-                            <button wire:click="sortBy('tracking_number')" class="flex items-center gap-1 hover:text-white">
-                                Tracking <i class="fa-solid fa-sort text-[10px] opacity-60"></i>
-                            </button>
-                        </th>
-                        <th class="table-header">Expéditeur / Destinataire</th>
-                        <th class="table-header">
-                            <button wire:click="sortBy('destination_country')" class="flex items-center gap-1 hover:text-white">
-                                Trajet <i class="fa-solid fa-sort text-[10px] opacity-60"></i>
-                            </button>
-                        </th>
-                        <th class="table-header">
-                            <button wire:click="sortBy('status')" class="flex items-center gap-1 hover:text-white">
-                                Statut <i class="fa-solid fa-sort text-[10px] opacity-60"></i>
-                            </button>
-                        </th>
-                        <th class="table-header text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse ($packages as $package)
-                    <tr wire:key="pkg-{{ $package->id }}" class="table-row-hover">
-                        <td class="px-4 py-4">
-                            <a href="{{ route('packages.show', $package) }}"
-                                class="font-semibold text-[#0062a3] hover:text-[#004e7b] transition-colors">
-                                {{ $package->tracking_number }}
-                            </a>
-                            <div class="mt-0.5 text-xs text-slate-400">
-                                <i class="fa-solid fa-key text-[#FF8F1D] mr-1"></i>{{ $package->withdrawal_code }}
-                            </div>
-                        </td>
-                        <td class="px-4 py-4">
-                            <div class="text-sm font-medium text-slate-800">{{ $package->sender->full_name }}</div>
-                            <div class="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
-                                <i class="fa-solid fa-arrow-right text-[#FF8F1D]"></i>
-                                {{ $package->receiver->full_name }} · {{ $package->receiver->phone }}
-                            </div>
-                        </td>
-                        <td class="px-4 py-4 text-sm text-slate-600">
-                            {{ $package->origin_country }}
-                            <i class="fa-solid fa-arrow-right mx-1.5 text-[#FF8F1D] text-xs"></i>
-                            {{ $package->destination_country }}
-                        </td>
-                        <td class="px-4 py-4">
-                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $package->status->badgeClasses() }}">
-                                {{ $package->status->label() }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-right text-sm">
-                            <a href="{{ route('packages.edit', $package) }}"
-                                class="font-semibold text-slate-500 hover:text-[#0062a3] transition-colors">
-                                Modifier
-                            </a>
-                            @can('delete', $package)
-                            <button wire:click="delete({{ $package->id }})"
-                                wire:confirm="Supprimer définitivement ce colis ?"
-                                class="ml-4 font-semibold text-rose-500 hover:text-rose-700 transition-colors">
-                                Supprimer
-                            </button>
-                            @endcan
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-4 py-14 text-center">
-                            <i class="fa-solid fa-box-open text-4xl text-slate-200 mb-3 block"></i>
-                            <p class="text-sm font-medium text-slate-400">Aucun colis trouvé.</p>
-                            <p class="mt-1 text-xs text-slate-300">Essayez de modifier vos filtres.</p>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <div class="mt-5 border-t border-slate-100 pt-4">
-            {{ $packages->links() }}
-        </div>
-
     </div>
+
+    {{-- Package cards --}}
+    <div class="space-y-3">
+        @forelse ($packages as $package)
+        <div wire:key="pkg-{{ $package->id }}" class="pkg-card">
+            <div class="flex items-start gap-4">
+
+                {{-- Icon --}}
+                <div class="stat-icon bg-slate-100 text-slate-500 shrink-0 mt-0.5" style="width:2.5rem;height:2.5rem;border-radius:0.875rem;font-size:0.875rem;">
+                    <i class="fa-solid fa-box"></i>
+                </div>
+
+                {{-- Content --}}
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <a href="{{ route('packages.show', $package) }}"
+                            class="text-base font-bold text-primary hover:text-[#0062a3] transition-colors">
+                            {{ $package->tracking_number }}
+                        </a>
+                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset {{ $package->status->badgeClasses() }}">
+                            {{ $package->status->label() }}
+                        </span>
+                    </div>
+
+                    <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
+                        <span class="flex items-center gap-1.5 text-sm text-slate-700">
+                            <i class="fa-solid fa-user text-slate-400 text-xs"></i>
+                            {{ $package->sender->full_name }}
+                            <i class="fa-solid fa-arrow-right text-accent text-xs"></i>
+                            <span class="font-medium">{{ $package->receiver->full_name }}</span>
+                        </span>
+                        <span class="flex items-center gap-1 text-xs text-slate-400">
+                            <i class="fa-solid fa-location-dot"></i>
+                            {{ $package->origin_country }}
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            {{ $package->destination_country }}
+                        </span>
+                    </div>
+
+                    <div class="mt-1 flex items-center gap-1 text-xs text-slate-400">
+                        <i class="fa-solid fa-key text-accent"></i>
+                        {{ $package->withdrawal_code }}
+                        @if($package->receiver->phone)
+                        <span class="mx-1.5 text-slate-200">·</span>
+                        <i class="fa-solid fa-phone"></i>
+                        {{ $package->receiver->phone }}
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Actions --}}
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <a href="{{ route('packages.edit', $package) }}"
+                        class="btn-icon" title="Modifier">
+                        <i class="fa-solid fa-pen text-xs"></i>
+                    </a>
+                    @can('delete', $package)
+                    <button wire:click="delete({{ $package->id }})"
+                        wire:confirm="Supprimer définitivement ce colis ?"
+                        class="btn-icon-danger" title="Supprimer">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                    @endcan
+                </div>
+
+            </div>
+        </div>
+        @empty
+        <div class="card-panel flex flex-col items-center justify-center py-16 text-center">
+            <div class="stat-icon bg-slate-100 text-slate-300 mb-4" style="width:3.5rem;height:3.5rem;border-radius:1rem;font-size:1.25rem;">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <p class="text-base font-semibold text-slate-400">Aucun colis trouvé.</p>
+            <p class="mt-1 text-sm text-slate-300">Essayez de modifier vos filtres.</p>
+            <a href="{{ route('packages.create') }}" class="btn-primary mt-4">
+                <i class="fa-solid fa-plus"></i>Créer un colis
+            </a>
+        </div>
+        @endforelse
+    </div>
+
+    {{-- Pagination --}}
+    @if ($packages->hasPages())
+    <div class="card-panel p-4">
+        {{ $packages->links() }}
+    </div>
+    @endif
+
 </div>

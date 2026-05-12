@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PackagePageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,9 @@ Route::view('/', 'welcome');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.store');
+
+    Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
 
     Route::get('/forgot-password', [PasswordController::class, 'showForgotForm'])->name('password.request');
     Route::get('/reset-password/{token}', [PasswordController::class, 'showResetForm'])->name('password.reset');

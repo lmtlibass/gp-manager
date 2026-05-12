@@ -3,11 +3,13 @@
 namespace App\Livewire\Withdrawals;
 
 use App\Enums\PackageStatus;
+use App\Enums\VoiceIntentEnum;
 use App\Models\Package;
 use App\Models\Withdrawal;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Process extends Component
@@ -24,6 +26,24 @@ class Process extends Component
     public function mount(): void
     {
         $this->authorize('create', Withdrawal::class);
+
+        // Pre-fill withdrawal code from voice command session
+        $key = VoiceIntentEnum::PackageWithdrawal->sessionKey();
+        if ($voiceData = session()->pull($key)) {
+            $this->withdrawal_code  = $voiceData['withdrawal_code']  ?? '';
+            $this->receiver_name    = $voiceData['receiver_name']    ?? '';
+            $this->receiver_phone   = $voiceData['receiver_phone']   ?? '';
+        }
+    }
+
+    #[On('voice-command-applied')]
+    public function onVoiceCommandApplied(string $intent, array $data): void
+    {
+        if ($intent === VoiceIntentEnum::PackageWithdrawal->value) {
+            $this->withdrawal_code = $data['withdrawal_code']  ?? $this->withdrawal_code;
+            $this->receiver_name   = $data['receiver_name']    ?? $this->receiver_name;
+            $this->receiver_phone  = $data['receiver_phone']   ?? $this->receiver_phone;
+        }
     }
 
     public function findPackage(): void
