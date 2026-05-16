@@ -6,6 +6,7 @@ use App\Enums\PackageStatus;
 use App\Enums\VoiceIntentEnum;
 use App\Models\Package;
 use App\Models\Withdrawal;
+use App\Services\PackageNotifier;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -68,7 +69,7 @@ class Process extends Component
         $this->receiver_phone = $this->package->receiver->phone;
     }
 
-    public function validateWithdrawal(): void
+    public function validateWithdrawal(PackageNotifier $notifier): void
     {
         if (! $this->package) {
             $this->findPackage();
@@ -78,10 +79,10 @@ class Process extends Component
         $this->authorize('update', $this->package);
 
         $this->validate([
-            'receiver_name' => ['required', 'string', 'max:255'],
-            'receiver_phone' => ['required', 'string', 'max:40'],
+            'receiver_name'     => ['required', 'string', 'max:255'],
+            'receiver_phone'    => ['required', 'string', 'max:40'],
             'identity_document' => ['nullable', 'string', 'max:120'],
-            'notes' => ['nullable', 'string', 'max:2000'],
+            'notes'             => ['nullable', 'string', 'max:2000'],
         ]);
 
         if ($this->package->withdrawal) {
@@ -90,32 +91,36 @@ class Process extends Component
             return;
         }
 
-        DB::transaction(function (): void {
+        $oldStatus = $this->package->status->value;
+
+        DB::transaction(function () use ($oldStatus): void {
             Withdrawal::query()->create([
-                'package_id' => $this->package->id,
-                'agency_id' => $this->package->agency_id,
-                'validated_by' => Auth::id(),
-                'receiver_name' => $this->receiver_name,
-                'receiver_phone' => $this->receiver_phone,
-                'withdrawal_code' => $this->package->withdrawal_code,
+                'package_id'       => $this->package->id,
+                'agency_id'        => $this->package->agency_id,
+                'validated_by'     => Auth::id(),
+                'receiver_name'    => $this->receiver_name,
+                'receiver_phone'   => $this->receiver_phone,
+                'withdrawal_code'  => $this->package->withdrawal_code,
                 'identity_document' => $this->identity_document ?: null,
-                'notes' => $this->notes ?: null,
-                'withdrawn_at' => now(),
+                'notes'            => $this->notes ?: null,
+                'withdrawn_at'     => now(),
             ]);
 
-            $oldStatus = $this->package->status->value;
             $this->package->update([
-                'status' => PackageStatus::Delivered,
+                'status'       => PackageStatus::Delivered,
                 'delivered_at' => now(),
             ]);
 
             $this->package->histories()->create([
-                'user_id' => Auth::id(),
+                'user_id'    => Auth::id(),
                 'old_status' => $oldStatus,
                 'new_status' => PackageStatus::Delivered->value,
-                'comment' => 'Retrait validé au guichet.',
+                'comment'    => 'Retrait validé au guichet.',
             ]);
         });
+
+        $this->package->refresh()->load(['sender', 'receiver']);
+        $notifier->notifyStatusChanged($this->package, $oldStatus);
 
         $this->reset(['withdrawal_code', 'package', 'receiver_name', 'receiver_phone', 'identity_document', 'notes']);
         session()->flash('success', 'Retrait validé et colis livré.');

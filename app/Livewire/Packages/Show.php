@@ -5,6 +5,7 @@ namespace App\Livewire\Packages;
 use App\Enums\PackageStatus;
 use App\Enums\UserRoleEnum;
 use App\Models\Package;
+use App\Services\PackageNotifier;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -24,12 +25,12 @@ class Show extends Component
         $this->status = $package->status->value;
     }
 
-    public function changeStatus(): void
+    public function changeStatus(PackageNotifier $notifier): void
     {
         $this->authorize('update', $this->package);
 
         $this->validate([
-            'status' => ['required', \Illuminate\Validation\Rule::in(array_map(fn (PackageStatus $status) => $status->value, $this->availableStatuses()))],
+            'status'  => ['required', \Illuminate\Validation\Rule::in(array_map(fn (PackageStatus $status) => $status->value, $this->availableStatuses()))],
             'comment' => ['nullable', 'string', 'max:2000'],
         ]);
 
@@ -40,20 +41,23 @@ class Show extends Component
         }
 
         $this->package->update([
-            'status' => $this->status,
-            'arrived_at' => in_array($this->status, ['arrived', 'ready_for_pickup', 'delivered'], true) ? now() : $this->package->arrived_at,
+            'status'      => $this->status,
+            'arrived_at'  => in_array($this->status, ['arrived', 'ready_for_pickup', 'delivered'], true) ? now() : $this->package->arrived_at,
             'delivered_at' => $this->status === 'delivered' ? now() : $this->package->delivered_at,
         ]);
 
         $this->package->histories()->create([
-            'user_id' => Auth::id(),
+            'user_id'    => Auth::id(),
             'old_status' => $oldStatus,
             'new_status' => $this->status,
-            'comment' => $this->comment,
+            'comment'    => $this->comment,
         ]);
 
         $this->comment = '';
-        $this->package->refresh();
+        $this->package->refresh()->load(['sender', 'receiver']);
+
+        $notifier->notifyStatusChanged($this->package, $oldStatus);
+
         session()->flash('success', 'Statut mis à jour.');
     }
 

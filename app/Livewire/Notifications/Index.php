@@ -7,12 +7,14 @@ use App\Enums\NotificationStatus;
 use App\Enums\VoiceIntentEnum;
 use App\Models\Package;
 use App\Models\PackageNotification;
+use App\Services\WhatsAppService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Throwable;
 
 class Index extends Component
 {
@@ -24,19 +26,16 @@ class Index extends Component
     public string $channel = 'whatsapp';
     public string $recipient_phone = '';
     public string $message = '';
-    public string $status = 'pending';
 
     public function mount(): void
     {
         $this->authorize('viewAny', Package::class);
 
-        // Voice command: send_notification
         $sendKey = VoiceIntentEnum::SendNotification->sessionKey();
         if ($voiceData = session()->pull($sendKey)) {
             $this->package_tracking = $voiceData['tracking_number'] ?? $voiceData['withdrawal_code'] ?? '';
             $this->search = $voiceData['customer_name'] ?? '';
 
-            // Set message based on message_type
             if (isset($voiceData['message_type'])) {
                 $this->message = match ($voiceData['message_type']) {
                     'arrived' => 'Votre colis est arrivé à l\'agence. Vous pouvez venir le retirer.',
@@ -54,7 +53,6 @@ class Index extends Component
             $this->package_tracking = $data['tracking_number'] ?? $data['withdrawal_code'] ?? $this->package_tracking;
             $this->search = $data['customer_name'] ?? $this->search;
 
-            // Set message based on message_type
             if (isset($data['message_type'])) {
                 $this->message = match ($data['message_type']) {
                     'arrived' => 'Votre colis est arrivé à l\'agence. Vous pouvez venir le retirer.',
@@ -65,7 +63,7 @@ class Index extends Component
         }
     }
 
-    public function create(): void
+    public function send(WhatsAppService $whatsapp): void
     {
         $data = $this->validate();
 
@@ -82,24 +80,51 @@ class Index extends Component
 
         $this->authorize('view', $package);
 
+        $channel = NotificationChannel::from($data['channel']);
+        $status = NotificationStatus::Pending;
+        $failedReason = null;
+        $sentAt = null;
+
+        try {
+            $whatsapp->send($channel, $data['recipient_phone'], $data['message']);
+            $status = NotificationStatus::Sent;
+            $sentAt = now();
+        } catch (Throwable $e) {
+            $status = NotificationStatus::Failed;
+            $failedReason = $e->getMessage();
+        }
+
         PackageNotification::query()->create([
-            'package_id' => $package->id,
-            'channel' => $data['channel'],
+            'package_id'      => $package->id,
+            'channel'         => $channel,
             'recipient_phone' => $data['recipient_phone'],
-            'message' => $data['message'],
-            'status' => $data['status'],
-            'sent_at' => $data['status'] === NotificationStatus::Sent->value ? now() : null,
+            'message'         => $data['message'],
+            'status'          => $status,
+            'sent_at'         => $sentAt,
+            'failed_reason'   => $failedReason,
         ]);
 
-        $this->reset(['package_tracking', 'recipient_phone', 'message', 'status']);
-        $this->status = NotificationStatus::Pending->value;
-        session()->flash('success', 'Notification enregistrée.');
+        $this->reset(['package_tracking', 'recipient_phone', 'message']);
+
+        if ($status === NotificationStatus::Sent) {
+            session()->flash('success', 'Message envoyé avec succès.');
+        } else {
+            session()->flash('error', 'Échec de l\'envoi : ' . $failedReason);
+        }
     }
 
-    public function markSent(int $notificationId): void
+    public function retry(int $notificationId, WhatsAppService $whatsapp): void
     {
         $notification = $this->notificationQuery()->findOrFail($notificationId);
-        $notification->update(['status' => NotificationStatus::Sent, 'sent_at' => now(), 'failed_reason' => null]);
+
+        try {
+            $whatsapp->send($notification->channel, $notification->recipient_phone, $notification->message);
+            $notification->update(['status' => NotificationStatus::Sent, 'sent_at' => now(), 'failed_reason' => null]);
+            session()->flash('success', 'Message renvoyé avec succès.');
+        } catch (Throwable $e) {
+            $notification->update(['failed_reason' => $e->getMessage()]);
+            session()->flash('error', 'Nouvel échec : ' . $e->getMessage());
+        }
     }
 
     public function markFailed(int $notificationId): void
@@ -120,7 +145,6 @@ class Index extends Component
                 ->latest()
                 ->paginate(10),
             'channels' => NotificationChannel::cases(),
-            'statuses' => NotificationStatus::cases(),
         ]);
     }
 
@@ -128,10 +152,9 @@ class Index extends Component
     {
         return [
             'package_tracking' => ['required', 'string', 'max:40'],
-            'channel' => ['required', Rule::enum(NotificationChannel::class)],
-            'recipient_phone' => ['required', 'string', 'max:40'],
-            'message' => ['required', 'string', 'max:2000'],
-            'status' => ['required', Rule::enum(NotificationStatus::class)],
+            'channel'          => ['required', Rule::enum(NotificationChannel::class)],
+            'recipient_phone'  => ['required', 'string', 'max:40'],
+            'message'          => ['required', 'string', 'max:2000'],
         ];
     }
 

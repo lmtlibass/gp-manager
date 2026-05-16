@@ -7,6 +7,7 @@ use App\Enums\UserRoleEnum;
 use App\Enums\VoiceIntentEnum;
 use App\Models\Customer;
 use App\Models\Package;
+use App\Services\PackageNotifier;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -88,46 +89,56 @@ class Form extends Component
         }
     }
 
-    public function save(): void
+    public function save(PackageNotifier $notifier): void
     {
         $data = $this->validate();
         $user = Auth::user();
-        $this->authorize($this->package?->exists ? 'update' : 'create', $this->package ?: Package::class);
+        $isNew = ! $this->package?->exists;
+        $this->authorize($isNew ? 'create' : 'update', $this->package ?: Package::class);
 
-        DB::transaction(function () use ($data, $user): void {
-            if ($this->package?->exists) {
-                $oldStatus = $this->package->status->value;
+        $oldStatus = $this->package?->status?->value;
+
+        $package = DB::transaction(function () use ($data, $user, $isNew, $oldStatus): Package {
+            if (! $isNew) {
                 $this->package->update($this->payload($data));
 
                 if ($oldStatus !== $this->status) {
                     $this->package->histories()->create([
-                        'user_id' => Auth::id(),
+                        'user_id'    => Auth::id(),
                         'old_status' => $oldStatus,
                         'new_status' => $this->status,
-                        'comment' => 'Statut modifié depuis la fiche colis.',
+                        'comment'    => 'Statut modifié depuis la fiche colis.',
                     ]);
                 }
 
-                return;
+                return $this->package->fresh(['sender', 'receiver']);
             }
 
             $package = Package::query()->create(array_merge($this->payload($data), [
-                'agency_id' => $user->agency_id,
-                'created_by' => Auth::id(),
+                'agency_id'       => $user->agency_id,
+                'created_by'      => Auth::id(),
                 'tracking_number' => Package::generateTrackingNumber(),
                 'withdrawal_code' => Package::generateWithdrawalCode(),
-                'received_at' => now(),
+                'received_at'     => now(),
             ]));
 
             $package->histories()->create([
-                'user_id' => Auth::id(),
+                'user_id'    => Auth::id(),
                 'old_status' => null,
                 'new_status' => $package->status->value,
-                'comment' => 'Création du colis.',
+                'comment'    => 'Création du colis.',
             ]);
+
+            return $package->load(['sender', 'receiver']);
         });
 
-        session()->flash('success', $this->package?->exists ? 'Colis mis à jour.' : 'Colis créé.');
+        if ($isNew) {
+            $notifier->notifyCreated($package);
+        } else {
+            $notifier->notifyStatusChanged($package, $oldStatus);
+        }
+
+        session()->flash('success', $isNew ? 'Colis créé.' : 'Colis mis à jour.');
         $this->redirectRoute('packages.index', navigate: true);
     }
 
