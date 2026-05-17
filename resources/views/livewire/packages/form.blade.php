@@ -69,20 +69,33 @@
                         <h2 class="section-title">Détails du colis</h2>
                     </div>
                     <div class="grid gap-4 sm:grid-cols-2">
-                        <div class="sm:col-span-2">
+                        <div class="sm:col-span-2" x-data="{ packageOther: @entangle('package_name').defer === '' ? false : !['Électroniques','Vêtements','Documents','Boîte','Sacs'].includes(@entangle('package_name').defer) }" x-init="packageOther = $wire.package_name && !['Électroniques','Vêtements','Documents','Boîte','Sacs'].includes($wire.package_name)">
                             <label class="form-label">Nom du colis</label>
-                            <div class="field-wrap">
-                                <span class="field-icon"><i class="fa-solid fa-tag"></i></span>
-                                <input wire:model="package_name" type="text"
-                                    class="form-input pl-10"
-                                    placeholder="Ex : Vêtements, Électronique, Documents…">
+                            <select class="form-select"
+                                @change="packageOther = $event.target.value === 'Autres'; if ($event.target.value !== 'Autres') $wire.set('package_name', $event.target.value)"
+                                x-init="$el.value = ['Électroniques','Vêtements','Documents','Boîte','Sacs'].includes($wire.package_name) ? $wire.package_name : ($wire.package_name ? 'Autres' : '')">
+                                <option value="">Choisir le type…</option>
+                                <option value="Électroniques">Électroniques</option>
+                                <option value="Vêtements">Vêtements</option>
+                                <option value="Documents">Documents</option>
+                                <option value="Boîte">Boîte</option>
+                                <option value="Sacs">Sacs</option>
+                                <option value="Autres">Autres</option>
+                            </select>
+                            <div x-show="packageOther" x-cloak class="mt-2">
+                                <div class="field-wrap">
+                                    <span class="field-icon"><i class="fa-solid fa-tag"></i></span>
+                                    <input wire:model="package_name" type="text"
+                                        class="form-input pl-10"
+                                        placeholder="Précisez le type de colis…">
+                                </div>
                             </div>
                             @error('package_name')
                             <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
-                            <label class="form-label">Poids (kg)</label>
+                            <label class="form-label">Poids (kg) <span class="font-normal text-slate-400">(optionnel)</span></label>
                             <div class="field-wrap">
                                 <span class="field-icon"><i class="fa-solid fa-weight-hanging"></i></span>
                                 <input wire:model="weight" type="number" step="0.01" min="0"
@@ -90,7 +103,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="form-label">Quantité</label>
+                            <label class="form-label">Quantité <span class="font-normal text-slate-400">(optionnel)</span></label>
                             <div class="field-wrap">
                                 <span class="field-icon"><i class="fa-solid fa-layer-group"></i></span>
                                 <input wire:model="quantity" type="number" min="1"
@@ -98,7 +111,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="form-label">Valeur déclarée</label>
+                            <label class="form-label">Valeur déclarée <span class="font-normal text-slate-400">(optionnel)</span></label>
                             <div class="field-wrap">
                                 <span class="field-icon"><i class="fa-solid fa-coins"></i></span>
                                 <input wire:model="declared_value" type="number" step="0.01" min="0"
@@ -113,20 +126,46 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div>
+                        <div x-data="{ originOther: false }" x-init="originOther = $wire.origin_country && !['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.origin_country)">
                             <label class="form-label">Pays d'origine</label>
-                            <div class="field-wrap">
-                                <span class="field-icon"><i class="fa-solid fa-plane-departure"></i></span>
-                                <input wire:model="origin_country" type="text"
-                                    class="form-input pl-10" placeholder="France">
+                            <select class="form-select"
+                                @change="originOther = $event.target.value === 'Autres'; if ($event.target.value !== 'Autres') $wire.set('origin_country', $event.target.value)"
+                                x-init="$el.value = ['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.origin_country) ? $wire.origin_country : ($wire.origin_country ? 'Autres' : '')">
+                                <option value="">Choisir le pays…</option>
+                                <option value="Sénégal">Sénégal</option>
+                                <option value="États-Unis">États-Unis</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Italie">Italie</option>
+                                <option value="Espagne">Espagne</option>
+                                <option value="Autres">Autres</option>
+                            </select>
+                            <div x-show="originOther" x-cloak class="mt-2">
+                                <div class="field-wrap">
+                                    <span class="field-icon"><i class="fa-solid fa-plane-departure"></i></span>
+                                    <input wire:model="origin_country" type="text"
+                                        class="form-input pl-10" placeholder="Précisez le pays…">
+                                </div>
                             </div>
                         </div>
-                        <div>
+                        <div x-data="{ destOther: false }" x-init="destOther = $wire.destination_country && !['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.destination_country)">
                             <label class="form-label">Pays de destination</label>
-                            <div class="field-wrap">
-                                <span class="field-icon"><i class="fa-solid fa-plane-arrival"></i></span>
-                                <input wire:model="destination_country" type="text"
-                                    class="form-input pl-10" placeholder="Sénégal">
+                            <select class="form-select"
+                                @change="destOther = $event.target.value === 'Autres'; if ($event.target.value !== 'Autres') $wire.set('destination_country', $event.target.value)"
+                                x-init="$el.value = ['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.destination_country) ? $wire.destination_country : ($wire.destination_country ? 'Autres' : '')">
+                                <option value="">Choisir le pays…</option>
+                                <option value="Sénégal">Sénégal</option>
+                                <option value="États-Unis">États-Unis</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Italie">Italie</option>
+                                <option value="Espagne">Espagne</option>
+                                <option value="Autres">Autres</option>
+                            </select>
+                            <div x-show="destOther" x-cloak class="mt-2">
+                                <div class="field-wrap">
+                                    <span class="field-icon"><i class="fa-solid fa-plane-arrival"></i></span>
+                                    <input wire:model="destination_country" type="text"
+                                        class="form-input pl-10" placeholder="Précisez le pays…">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -152,6 +191,20 @@
                             <textarea wire:model="notes" rows="3"
                                 class="form-textarea"
                                 placeholder="Instructions pour l'équipe…"></textarea>
+                        </div>
+                        <div x-data="{ preview: null }">
+                            <label class="form-label">
+                                Photo du colis <span class="font-normal text-slate-400">(optionnel)</span>
+                            </label>
+                            <input type="file" wire:model="photo" accept="image/*"
+                                class="form-input py-2"
+                                @change="const f = $event.target.files[0]; preview = f ? URL.createObjectURL(f) : null">
+                            <div x-show="preview" x-cloak class="mt-3">
+                                <img :src="preview" alt="Aperçu" class="h-40 w-auto rounded-xl border border-slate-200 object-cover">
+                            </div>
+                            @error('photo')
+                            <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
