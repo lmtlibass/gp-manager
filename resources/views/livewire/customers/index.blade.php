@@ -33,72 +33,76 @@
         </div>
 
         <form wire:submit.prevent="save">
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <div>
-                    <label class="form-label">
-                        <i class="fa-solid fa-user text-slate-400 mr-1.5 text-xs"></i>Prénom
-                    </label>
-                    <input wire:model="first_name" type="text" class="form-input" placeholder="Jean">
-                    @error('first_name') <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label">Nom</label>
-                    <input wire:model="last_name" type="text" class="form-input" placeholder="Dupont">
-                </div>
-                <div>
-                    <label class="form-label">
-                        <i class="fa-solid fa-phone text-slate-400 mr-1.5 text-xs"></i>Téléphone principal
-                    </label>
-                    <div class="field-wrap">
-                        <span class="field-icon"><i class="fa-solid fa-phone"></i></span>
-                        <input wire:model="phone" type="tel" class="form-input pl-10" placeholder="+33 6 00 00 00 00">
+            <div class="grid gap-4 lg:grid-cols-2">
+
+                {{-- Personal info card --}}
+                <div class="rounded-xl bg-blue-50 border-l-4 border-blue-500 p-4 space-y-4">
+                    <p class="text-xs font-bold uppercase tracking-widest text-blue-600">
+                        <i class="fa-solid fa-user mr-1.5"></i>Informations personnelles
+                    </p>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="form-label">
+                                <i class="fa-solid fa-user text-slate-400 mr-1.5 text-xs"></i>Prénom
+                            </label>
+                            <input wire:model="first_name" type="text" class="form-input" placeholder="Jean">
+                            @error('first_name') <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="form-label">Nom</label>
+                            <input wire:model="last_name" type="text" class="form-input" placeholder="Dupont">
+                            @error('last_name') <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p> @enderror
+                        </div>
                     </div>
-                    @error('phone') <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label">Téléphone alternatif</label>
-                    <div class="field-wrap">
-                        <span class="field-icon"><i class="fa-solid fa-phone"></i></span>
-                        <input wire:model="alternative_phone" type="tel" class="form-input pl-10" placeholder="+33 6 00 00 00 00">
-                    </div>
-                </div>
-                <div>
-                    <label class="form-label">
-                        <i class="fa-solid fa-envelope text-slate-400 mr-1.5 text-xs"></i>Email
-                    </label>
-                    <div class="field-wrap">
-                        <span class="field-icon"><i class="fa-solid fa-envelope"></i></span>
-                        <input wire:model="email" type="email" class="form-input pl-10" placeholder="jean@exemple.com">
+                    <div>
+                        <label class="form-label">
+                            <i class="fa-solid fa-phone text-slate-400 mr-1.5 text-xs"></i>Téléphone
+                        </label>
+                        <div class="field-wrap">
+                            <span class="field-icon"><i class="fa-solid fa-phone"></i></span>
+                            <input wire:model="phone" type="tel" class="form-input pl-10" placeholder="+33 6 00 00 00 00">
+                        </div>
+                        @error('phone') <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p> @enderror
                     </div>
                 </div>
-                <div>
-                    <label class="form-label">
-                        <i class="fa-solid fa-city text-slate-400 mr-1.5 text-xs"></i>Ville
-                    </label>
-                    <div class="field-wrap">
-                        <span class="field-icon"><i class="fa-solid fa-city"></i></span>
-                        <input wire:model="city" type="text" class="form-input pl-10" placeholder="Paris">
+
+                {{-- Location info card --}}
+                <div class="rounded-xl bg-orange-50 border-l-4 border-orange-500 p-4 space-y-4">
+                    <p class="text-xs font-bold uppercase tracking-widest text-orange-600">
+                        <i class="fa-solid fa-location-dot mr-1.5"></i>Localisation
+                    </p>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="form-label">
+                                <i class="fa-solid fa-city text-slate-400 mr-1.5 text-xs"></i>Ville
+                            </label>
+                            <div class="field-wrap">
+                                <span class="field-icon"><i class="fa-solid fa-city"></i></span>
+                                <input wire:model="city" type="text" class="form-input pl-10" placeholder="Paris">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Pays</label>
+                            <div class="field-wrap">
+                                <span class="field-icon"><i class="fa-solid fa-globe"></i></span>
+                                <input wire:model="country" type="text" class="form-input pl-10" placeholder="France">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Adresse</label>
+                        <div class="field-wrap">
+                            <span class="field-icon"><i class="fa-solid fa-location-dot"></i></span>
+                            <input wire:model="address" type="text" class="form-input pl-10" placeholder="12 rue de la Paix">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Notes</label>
+                        <textarea wire:model="notes" rows="2" class="form-textarea"
+                            placeholder="Informations complémentaires…"></textarea>
                     </div>
                 </div>
-                <div>
-                    <label class="form-label">Pays</label>
-                    <div class="field-wrap">
-                        <span class="field-icon"><i class="fa-solid fa-globe"></i></span>
-                        <input wire:model="country" type="text" class="form-input pl-10" placeholder="France">
-                    </div>
-                </div>
-                <div class="sm:col-span-2">
-                    <label class="form-label">Adresse</label>
-                    <div class="field-wrap">
-                        <span class="field-icon"><i class="fa-solid fa-location-dot"></i></span>
-                        <input wire:model="address" type="text" class="form-input pl-10" placeholder="12 rue de la Paix">
-                    </div>
-                </div>
-                <div class="sm:col-span-2 lg:col-span-3">
-                    <label class="form-label">Notes</label>
-                    <textarea wire:model="notes" rows="2" class="form-textarea"
-                        placeholder="Informations complémentaires…"></textarea>
-                </div>
+
             </div>
 
             @if ($errors->any())
