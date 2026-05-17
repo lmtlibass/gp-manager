@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Auth;
 
         {{-- Brand --}}
         <div class="flex h-16 items-center gap-3 border-b border-white/8 px-5">
-            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FF8F1D] font-black text-base text-[#001F3D]">G</span>
+            <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto">
             <div>
                 <div class="text-sm font-bold tracking-wide text-white">{{ config('app.name') }}</div>
                 <div class="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Gestion Colis</div>
@@ -107,7 +107,7 @@ use Illuminate\Support\Facades\Auth;
         {{-- Mobile header --}}
         <header class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 py-3 lg:hidden">
             <div class="flex items-center gap-3">
-                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#FF8F1D] font-black text-base text-[#001F3D]">G</span>
+                <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto">
                 <div>
                     <div class="text-sm font-bold text-[#001F3D]">{{ config('app.name') }}</div>
                     <div class="text-[11px] text-slate-500">Gestion colis</div>
