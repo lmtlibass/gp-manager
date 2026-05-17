@@ -14,10 +14,8 @@
     <div class="relative w-full max-w-md">
 
         {{-- Brand --}}
-        <div class="mb-8 text-center">
-            <span class="inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-accent shadow-2xl ring-4 ring-white/10">
-                <i class="fa-solid fa-box-open text-3xl text-primary"></i>
-            </span>
+        <div class="mb-8 flex flex-col items-center text-center">
+            <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-16 w-auto rounded-2xl shadow-2xl ring-4 ring-white/10">
             <h1 class="mt-5 text-3xl font-extrabold tracking-tight text-white">GP Manager</h1>
             <p class="mt-1.5 text-sm text-slate-400">Plateforme de gestion logistique</p>
         </div>

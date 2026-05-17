@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Auth;
 
         {{-- Brand --}}
         <div class="flex h-16 items-center gap-3 border-b border-white/8 px-5">
-            <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto">
+            <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto rounded-xl shadow-md ring-2 ring-white/10">
             <div>
                 <div class="text-sm font-bold tracking-wide text-white">{{ config('app.name') }}</div>
                 <div class="text-[10px] font-semibold tracking-widest text-slate-400">la Gestion intelligente des colis.</div>
@@ -107,7 +107,7 @@ use Illuminate\Support\Facades\Auth;
         {{-- Mobile header --}}
         <header class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 py-3 lg:hidden">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto">
+                <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto rounded-xl shadow-md ring-2 ring-white/10">
                 <div>
                     <div class="text-sm font-bold text-[#001F3D]">{{ config('app.name') }}</div>
                     <div class="text-[11px] text-slate-500">la Gestion intelligente des colis.</div>
