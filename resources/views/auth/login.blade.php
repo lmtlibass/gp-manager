@@ -152,7 +152,7 @@
                             <span class="stat-icon bg-blue-50 text-blue-500 shrink-0" style="width:2rem;height:2rem;border-radius:0.625rem;font-size:0.8rem;">
                                 <i class="fa-solid fa-building"></i>
                             </span>
-                            <p class="text-sm font-semibold text-slate-700">Votre agence</p>
+                            <p class="text-sm font-semibold text-slate-700">Votre Agence GP</p>
                         </div>
 
                         <div>
@@ -215,13 +215,6 @@
 
                     {{-- Section compte --}}
                     <div class="space-y-3">
-                        <div class="flex items-center gap-2 pb-1 border-b border-slate-100">
-                            <span class="stat-icon bg-orange-50 text-orange-500 shrink-0" style="width:2rem;height:2rem;border-radius:0.625rem;font-size:0.8rem;">
-                                <i class="fa-solid fa-user-tie"></i>
-                            </span>
-                            <p class="text-sm font-semibold text-slate-700">Votre compte GP Manager</p>
-                        </div>
-
                         <div class="grid gap-3 grid-cols-2">
                             <div>
                                 <label class="form-label">Prénom</label>
@@ -257,17 +250,6 @@
                             @error('email', 'registerBag')
                             <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
                             @enderror
-                        </div>
-
-                        <div>
-                            <label class="form-label">Téléphone personnel <span class="text-slate-400 font-normal">(optionnel)</span></label>
-                            <div class="field-wrap">
-                                <span class="field-icon"><i class="fa-solid fa-phone"></i></span>
-                                <input name="phone" type="tel"
-                                    class="input-field pl-10"
-                                    placeholder="+33 6 00 00 00 00"
-                                    value="{{ old('phone') }}" />
-                            </div>
                         </div>
 
                         <div>
