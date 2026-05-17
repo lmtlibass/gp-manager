@@ -23,6 +23,10 @@ class Form extends Component
 
     public int|string|null $sender_id = null;
     public int|string|null $receiver_id = null;
+    public string $sender_name = '';
+    public string $sender_phone = '';
+    public string $receiver_name = '';
+    public string $receiver_phone = '';
     public string $package_name = '';
     public string $description = '';
     public string $weight = '';
@@ -41,6 +45,10 @@ class Form extends Component
 
             $this->sender_id = $package->sender_id;
             $this->receiver_id = $package->receiver_id;
+            $this->sender_name = $package->sender_name ?? '';
+            $this->sender_phone = $package->sender_phone ?? '';
+            $this->receiver_name = $package->receiver_name ?? '';
+            $this->receiver_phone = $package->receiver_phone ?? '';
             $this->package_name = $package->package_name;
             $this->description = $package->description ?? '';
             $this->weight = $package->weight ?? '';
@@ -80,6 +88,7 @@ class Form extends Component
             'package_name', 'weight', 'quantity', 'declared_value',
             'origin_country', 'destination_country', 'description', 'notes',
             'sender_id', 'receiver_id', 'status',
+            'sender_name', 'sender_phone', 'receiver_name', 'receiver_phone',
         ];
 
         foreach ($fields as $field) {
@@ -153,8 +162,12 @@ class Form extends Component
     protected function rules(): array
     {
         return [
-            'sender_id' => ['required', 'integer', $this->customerExistsRule()],
-            'receiver_id' => ['required', 'integer', $this->customerExistsRule(), 'different:sender_id'],
+            'sender_id' => ['nullable', 'integer'],
+            'receiver_id' => ['nullable', 'integer'],
+            'sender_name' => ['required', 'string', 'max:255'],
+            'sender_phone' => ['nullable', 'string', 'max:50'],
+            'receiver_name' => ['required', 'string', 'max:255'],
+            'receiver_phone' => ['required', 'string', 'max:50'],
             'package_name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'weight' => ['nullable', 'numeric', 'min:0', 'max:999999.99'],

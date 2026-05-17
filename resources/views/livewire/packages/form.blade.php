@@ -21,43 +21,89 @@
             <div class="lg:col-span-2 space-y-5">
 
                 {{-- Expéditeur & Destinataire --}}
-                <div class="card-panel">
-                    <div class="flex items-center gap-2.5 mb-5">
-                        <span class="stat-icon bg-blue-50 text-blue-500" style="width:2.25rem;height:2.25rem;border-radius:0.75rem;font-size:0.875rem;">
-                            <i class="fa-solid fa-users"></i>
-                        </span>
-                        <h2 class="section-title">Expéditeur &amp; Destinataire</h2>
-                    </div>
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div>
-                            <label class="form-label">
-                                <i class="fa-solid fa-user-tag text-slate-400 mr-1.5 text-xs"></i>Expéditeur
-                            </label>
-                            <select wire:model="sender_id" class="form-select">
-                                <option value="">Choisir l'expéditeur…</option>
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
-                                @endforeach
+                <div class="grid grid-cols-2 gap-4">
+
+                    {{-- Expéditeur --}}
+                    <div class="bg-blue-50 border-l-4 border-blue-500 rounded-xl p-4 space-y-3">
+                        <p class="text-xs font-bold uppercase tracking-widest text-blue-600 flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot"></i>Expéditeur
+                        </p>
+                        <div x-data="{ originOther: @js(!in_array($origin_country, ['', 'Sénégal', 'États-Unis', 'Canada', 'Italie', 'Espagne'])) }">
+                            <select class="form-select"
+                                @change="originOther = $event.target.value === 'Autres'; if ($event.target.value !== 'Autres') $wire.set('origin_country', $event.target.value)"
+                                x-init="$el.value = ['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.origin_country) ? $wire.origin_country : ($wire.origin_country ? 'Autres' : '')">
+                                <option value="">Pays…</option>
+                                <option value="Sénégal">Sénégal</option>
+                                <option value="États-Unis">États-Unis</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Italie">Italie</option>
+                                <option value="Espagne">Espagne</option>
+                                <option value="Autres">Autres</option>
                             </select>
-                            @error('sender_id')
+                            <div x-show="originOther" x-cloak class="mt-2">
+                                <input wire:model="origin_country" type="text" class="form-input" placeholder="Entrez le pays...">
+                            </div>
+                            @error('origin_country')
                             <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
-                            <label class="form-label">
-                                <i class="fa-solid fa-user-check text-slate-400 mr-1.5 text-xs"></i>Destinataire
-                            </label>
-                            <select wire:model="receiver_id" class="form-select">
-                                <option value="">Choisir le destinataire…</option>
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
-                                @endforeach
-                            </select>
-                            @error('receiver_id')
+                            <input wire:model="sender_name" type="text" class="form-input" placeholder="Nom *">
+                            @error('sender_name')
                             <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
                             @enderror
                         </div>
+                        <div>
+                            <div class="field-wrap">
+                                <span class="field-icon"><i class="fa-brands fa-whatsapp text-green-500"></i></span>
+                                <input wire:model="sender_phone" type="text" class="form-input pl-10" placeholder="WhatsApp">
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1"><i class="fa-brands fa-whatsapp text-green-500 mr-1"></i>Numéro WhatsApp de l'expéditeur</p>
+                        </div>
                     </div>
+
+                    {{-- Destinataire --}}
+                    <div class="bg-orange-50 border-l-4 border-orange-500 rounded-xl p-4 space-y-3">
+                        <p class="text-xs font-bold uppercase tracking-widest text-orange-600 flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot"></i>Destinataire
+                        </p>
+                        <div x-data="{ destOther: @js(!in_array($destination_country, ['', 'Sénégal', 'États-Unis', 'Canada', 'Italie', 'Espagne'])) }">
+                            <select class="form-select"
+                                @change="destOther = $event.target.value === 'Autres'; if ($event.target.value !== 'Autres') $wire.set('destination_country', $event.target.value)"
+                                x-init="$el.value = ['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.destination_country) ? $wire.destination_country : ($wire.destination_country ? 'Autres' : '')">
+                                <option value="">Pays…</option>
+                                <option value="Sénégal">Sénégal</option>
+                                <option value="États-Unis">États-Unis</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Italie">Italie</option>
+                                <option value="Espagne">Espagne</option>
+                                <option value="Autres">Autres</option>
+                            </select>
+                            <div x-show="destOther" x-cloak class="mt-2">
+                                <input wire:model="destination_country" type="text" class="form-input" placeholder="Entrez le pays...">
+                            </div>
+                            @error('destination_country')
+                            <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <input wire:model="receiver_name" type="text" class="form-input" placeholder="Nom *">
+                            @error('receiver_name')
+                            <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <div class="field-wrap">
+                                <span class="field-icon"><i class="fa-brands fa-whatsapp text-green-500"></i></span>
+                                <input wire:model="receiver_phone" type="text" class="form-input pl-10" placeholder="WhatsApp *">
+                            </div>
+                            @error('receiver_phone')
+                            <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
+                            @enderror
+                            <p class="text-xs text-slate-400 mt-1"><i class="fa-brands fa-whatsapp text-green-500 mr-1"></i>Numéro WhatsApp du destinataire</p>
+                        </div>
+                    </div>
+
                 </div>
 
                 {{-- Détails du colis --}}
@@ -126,48 +172,6 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div x-data="{ originOther: false }" x-init="originOther = $wire.origin_country && !['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.origin_country)">
-                            <label class="form-label">Pays d'origine</label>
-                            <select class="form-select"
-                                @change="originOther = $event.target.value === 'Autres'; if ($event.target.value !== 'Autres') $wire.set('origin_country', $event.target.value)"
-                                x-init="$el.value = ['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.origin_country) ? $wire.origin_country : ($wire.origin_country ? 'Autres' : '')">
-                                <option value="">Choisir le pays…</option>
-                                <option value="Sénégal">Sénégal</option>
-                                <option value="États-Unis">États-Unis</option>
-                                <option value="Canada">Canada</option>
-                                <option value="Italie">Italie</option>
-                                <option value="Espagne">Espagne</option>
-                                <option value="Autres">Autres</option>
-                            </select>
-                            <div x-show="originOther" x-cloak class="mt-2">
-                                <div class="field-wrap">
-                                    <span class="field-icon"><i class="fa-solid fa-plane-departure"></i></span>
-                                    <input wire:model="origin_country" type="text"
-                                        class="form-input pl-10" placeholder="Précisez le pays…">
-                                </div>
-                            </div>
-                        </div>
-                        <div x-data="{ destOther: false }" x-init="destOther = $wire.destination_country && !['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.destination_country)">
-                            <label class="form-label">Pays de destination</label>
-                            <select class="form-select"
-                                @change="destOther = $event.target.value === 'Autres'; if ($event.target.value !== 'Autres') $wire.set('destination_country', $event.target.value)"
-                                x-init="$el.value = ['Sénégal','États-Unis','Canada','Italie','Espagne'].includes($wire.destination_country) ? $wire.destination_country : ($wire.destination_country ? 'Autres' : '')">
-                                <option value="">Choisir le pays…</option>
-                                <option value="Sénégal">Sénégal</option>
-                                <option value="États-Unis">États-Unis</option>
-                                <option value="Canada">Canada</option>
-                                <option value="Italie">Italie</option>
-                                <option value="Espagne">Espagne</option>
-                                <option value="Autres">Autres</option>
-                            </select>
-                            <div x-show="destOther" x-cloak class="mt-2">
-                                <div class="field-wrap">
-                                    <span class="field-icon"><i class="fa-solid fa-plane-arrival"></i></span>
-                                    <input wire:model="destination_country" type="text"
-                                        class="form-input pl-10" placeholder="Précisez le pays…">
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -181,13 +185,13 @@
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <label class="form-label">Description du contenu</label>
+                            <label class="form-label">Description du contenu <span class="font-normal text-slate-400">(optionnel)</span></label>
                             <textarea wire:model="description" rows="3"
                                 class="form-textarea"
                                 placeholder="Contenu du colis, informations utiles…"></textarea>
                         </div>
                         <div>
-                            <label class="form-label">Notes internes</label>
+                            <label class="form-label">Notes internes <span class="font-normal text-slate-400">(optionnel)</span></label>
                             <textarea wire:model="notes" rows="3"
                                 class="form-textarea"
                                 placeholder="Instructions pour l'équipe…"></textarea>
