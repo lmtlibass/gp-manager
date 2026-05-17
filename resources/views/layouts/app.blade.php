@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name') }} — Gestion Colis</title>
+    <title>{{ config('app.name') }} — la Gestion intelligente des colis.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         integrity="sha512-9uAr5fSg4z2yG7P2H1V5qBfP2qNQAWLLS7nF3wzd5xl0gNuyXx7e3W8lwW9FKoG8bZq8iwXb7nQPj+PlP60Vkg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Auth;
             <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto">
             <div>
                 <div class="text-sm font-bold tracking-wide text-white">{{ config('app.name') }}</div>
-                <div class="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Gestion Colis</div>
+                <div class="text-[10px] font-semibold tracking-widest text-slate-400">la Gestion intelligente des colis.</div>
             </div>
         </div>
 
@@ -110,7 +110,7 @@ use Illuminate\Support\Facades\Auth;
                 <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto">
                 <div>
                     <div class="text-sm font-bold text-[#001F3D]">{{ config('app.name') }}</div>
-                    <div class="text-[11px] text-slate-500">Gestion colis</div>
+                    <div class="text-[11px] text-slate-500">la Gestion intelligente des colis.</div>
                 </div>
             </div>
             <button @click="mobileOpen = !mobileOpen" type="button"
