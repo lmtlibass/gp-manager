@@ -28,11 +28,6 @@
                     <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
                 @endforeach
             </select>
-            <select wire:model.live="perPage" class="form-select py-2.5">
-                <option value="10">10 résultats</option>
-                <option value="25">25 résultats</option>
-                <option value="50">50 résultats</option>
-            </select>
         </div>
     </div>
 

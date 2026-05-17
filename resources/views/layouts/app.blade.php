@@ -31,12 +31,8 @@ use Illuminate\Support\Facades\Auth;
     <aside class="hidden w-64 shrink-0 flex-col bg-[#001F3D] lg:flex">
 
         {{-- Brand --}}
-        <div class="flex h-16 items-center gap-3 border-b border-white/8 px-5">
-            <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto rounded-xl shadow-md ring-2 ring-white/10">
-            <div>
-                <div class="text-sm font-bold tracking-wide text-white">{{ config('app.name') }}</div>
-                <div class="text-[10px] font-semibold tracking-widest text-slate-400">la Gestion intelligente des colis.</div>
-            </div>
+        <div class="flex h-16 items-center justify-center border-b border-white/8 px-5">
+            <img src="{{ asset('images/logo.png') }}" alt="GP221" class="rounded-lg shadow-md ring-2 ring-white/10" style="height: calc(var(--spacing) * 14); width: auto;">
         </div>
 
         {{-- Nav --}}
@@ -107,11 +103,7 @@ use Illuminate\Support\Facades\Auth;
         {{-- Mobile header --}}
         <header class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 py-3 lg:hidden">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-9 w-auto rounded-xl shadow-md ring-2 ring-white/10">
-                <div>
-                    <div class="text-sm font-bold text-[#001F3D]">{{ config('app.name') }}</div>
-                    <div class="text-[11px] text-slate-500">la Gestion intelligente des colis.</div>
-                </div>
+                <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-10 w-auto rounded-lg shadow-md ring-2 ring-white/10">
             </div>
             <button @click="mobileOpen = !mobileOpen" type="button"
                 class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition hover:bg-slate-200">
