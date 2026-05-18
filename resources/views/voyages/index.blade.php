@@ -9,7 +9,7 @@
             <h1 class="page-heading">
                 <i class="fa-solid fa-plane text-accent mr-2"></i>Voyages
             </h1>
-            <p class="page-subtitle">Gérez vos voyages et disponibilités.</p>
+            <p class="page-subtitle">Planifiez vos prochains voyages et notifiez vos clients.</p>
         </div>
     </div>
 
