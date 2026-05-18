@@ -47,6 +47,10 @@ use Illuminate\Support\Facades\Auth;
                 <span class="sidebar-icon"><i class="fa-solid fa-box-open"></i></span>
                 <span>Colis</span>
             </a>
+            <a href="{{ route('voyages.index') }}" class="sidebar-link {{ request()->routeIs('voyages.*') ? 'active' : '' }}">
+                <span class="sidebar-icon"><i class="fa-solid fa-plane"></i></span>
+                <span>Voyage</span>
+            </a>
             <a href="{{ route('customers.index') }}" class="sidebar-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
                 <span class="sidebar-icon"><i class="fa-solid fa-address-book"></i></span>
                 <span>Clients</span>
@@ -105,11 +109,16 @@ use Illuminate\Support\Facades\Auth;
             <div class="flex items-center gap-3">
                 <img src="{{ asset('images/logo.png') }}" alt="GP221" class="h-10 w-auto rounded-lg shadow-md ring-2 ring-white/10">
             </div>
-            <button @click="mobileOpen = !mobileOpen" type="button"
-                class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition hover:bg-slate-200">
-                <i x-show="!mobileOpen" class="fa-solid fa-bars text-sm"></i>
-                <i x-show="mobileOpen" class="fa-solid fa-xmark text-sm"></i>
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('notifications.index') }}" class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition hover:bg-slate-200 relative">
+                    <i class="fa-solid fa-bell text-sm"></i>
+                </a>
+                <button @click="mobileOpen = !mobileOpen" type="button"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition hover:bg-slate-200">
+                    <i x-show="!mobileOpen" class="fa-solid fa-bars text-sm"></i>
+                    <i x-show="mobileOpen" class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
         </header>
 
         {{-- Mobile dropdown menu --}}
@@ -191,9 +200,9 @@ use Illuminate\Support\Facades\Auth;
         <i class="fa-solid fa-address-book text-base"></i>
         <span>Clients</span>
     </a>
-    <a href="{{ route('notifications.index') }}" class="mobile-bottom-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
-        <i class="fa-solid fa-bell text-base"></i>
-        <span>Alertes</span>
+    <a href="{{ route('voyages.index') }}" class="mobile-bottom-link {{ request()->routeIs('voyages.*') ? 'active' : '' }}">
+        <i class="fa-solid fa-plane text-base"></i>
+        <span>Voyage</span>
     </a>
 </nav>
 

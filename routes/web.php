@@ -44,6 +44,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::view('/withdrawals', 'withdrawals.process')->name('withdrawals.process');
         Route::view('/search', 'search.index')->name('search.index');
         Route::view('/notifications', 'notifications.index')->name('notifications.index');
+        Route::view('/voyages', 'voyages.index')->name('voyages.index');
     });
 
     Route::middleware(['can:manage-users'])->group(function () {
