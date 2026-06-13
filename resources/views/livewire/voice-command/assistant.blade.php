@@ -102,7 +102,7 @@
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 translate-y-3 scale-95"
         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-        class="absolute bottom-16 right-0 mb-2 w-80 sm:w-96 rounded-3xl border border-slate-200/60 bg-white shadow-2xl overflow-hidden"
+        class="absolute bottom-16 right-0 mb-2 w-80 sm:w-96 rounded-3xl border border-slate-200/60 bg-white shadow-2xl overflow-hidden dark:bg-slate-800 dark:border-slate-700/60"
     >
         {{-- Header --}}
         <div class="flex items-center gap-3 bg-primary px-5 py-4">
@@ -279,16 +279,16 @@
             @if(!$commandResult && !$error && !$isProcessing)
             @php $logs = $this->recentLogs; @endphp
             @if($logs->isNotEmpty())
-            <div class="border-t border-slate-100 pt-3">
+            <div class="border-t border-slate-100 dark:border-slate-700 pt-3">
                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Historique récent</p>
                 <div class="space-y-1.5">
                     @foreach($logs as $log)
                     @php $logIntent = \App\Enums\VoiceIntentEnum::tryFrom($log->intent ?? ''); @endphp
-                    <div class="flex items-center gap-2 rounded-xl px-3 py-2 bg-slate-50 border border-slate-100">
+                    <div class="flex items-center gap-2 rounded-xl px-3 py-2 bg-slate-50 border border-slate-100 dark:bg-slate-700/50 dark:border-slate-700">
                         @if($logIntent)
                         <i class="fa-solid {{ $logIntent->icon() }} text-xs text-slate-400 shrink-0 w-4 text-center"></i>
                         @endif
-                        <p class="text-xs text-slate-600 truncate flex-1">{{ $log->transcription }}</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 truncate flex-1">{{ $log->transcription }}</p>
                         <span class="text-[10px] text-slate-400 shrink-0">{{ $log->created_at->format('H:i') }}</span>
                     </div>
                     @endforeach

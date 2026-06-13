@@ -48,7 +48,43 @@
                 </div>
                 <div>
                     <label class="form-label">Téléphone</label>
-                    <input wire:model="phone" type="tel" class="form-input" placeholder="+33 6 00 00 00 00">
+                    <div x-data="phonePicker()" x-modelable="value" wire:model="phone"
+                         class="relative" @click.away="open = false">
+                        <div class="flex items-stretch rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-150 hover:border-slate-300 focus-within:border-[#0062a3] focus-within:ring-2 focus-within:ring-[#0062a3]/20">
+                            <button type="button" @click="open = !open"
+                                    class="flex items-center gap-1.5 px-3 bg-slate-50 border-r border-slate-200 rounded-l-xl hover:bg-slate-100 transition-colors shrink-0 cursor-pointer">
+                                <span x-text="selected?.flag" class="text-base leading-none"></span>
+                                <span x-text="selected?.dial" class="text-xs font-semibold text-slate-600 min-w-[30px]"></span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform duration-150" :class="open ? 'rotate-180' : ''"></i>
+                            </button>
+                            <input x-model="localNumber" @input="_sync()" type="tel"
+                                   class="flex-1 min-w-0 rounded-r-xl px-3 py-3 text-sm text-slate-900 bg-transparent outline-none placeholder:text-slate-400"
+                                   placeholder="6 00 00 00 00">
+                        </div>
+                        <div x-show="open" x-cloak
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             class="absolute left-0 top-full z-50 mt-1.5 w-72 rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden">
+                            <div class="p-2.5 border-b border-slate-100">
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-xs"></i></span>
+                                    <input x-model="search" type="text" placeholder="Pays ou indicatif…"
+                                           class="w-full rounded-xl border border-slate-200 py-2 pl-8 pr-3 text-sm outline-none focus:border-[#0062a3]" @click.stop>
+                                </div>
+                            </div>
+                            <ul class="max-h-52 overflow-y-auto divide-y divide-slate-50 py-1">
+                                <template x-for="c in filtered" :key="c.code">
+                                    <li><button type="button" @click="selectDialCode(c)"
+                                            class="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-[#0062a3]/5 transition-colors">
+                                        <span x-text="c.flag" class="text-xl leading-none w-7 text-center shrink-0"></span>
+                                        <span x-text="c.name" class="flex-1 text-sm font-medium text-slate-700"></span>
+                                        <span x-text="c.dial" class="text-xs font-semibold text-slate-500 font-mono"></span>
+                                    </button></li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
                     @error('phone') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
@@ -63,21 +99,27 @@
                 </div>
                 <div>
                     <label class="form-label">Rôle</label>
-                    <select wire:model="role" class="form-select">
-                        @foreach ($roles as $roleOption)
-                            <option value="{{ $roleOption->value }}">{{ $roleOption->label() }}</option>
-                        @endforeach
-                    </select>
+                    <div class="select-wrap">
+                        <select wire:model="role" class="form-select">
+                            @foreach ($roles as $roleOption)
+                                <option value="{{ $roleOption->value }}">{{ $roleOption->label() }}</option>
+                            @endforeach
+                        </select>
+                        <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
                     @error('role') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="form-label">Agence</label>
-                    <select wire:model="agency_id" class="form-select">
-                        <option value="">Choisir une agence</option>
-                        @foreach ($agencies as $agency)
-                            <option value="{{ $agency->id }}">{{ $agency->name }}</option>
-                        @endforeach
-                    </select>
+                    <div class="select-wrap">
+                        <select wire:model="agency_id" class="form-select">
+                            <option value="">Choisir une agence</option>
+                            @foreach ($agencies as $agency)
+                                <option value="{{ $agency->id }}">{{ $agency->name }}</option>
+                            @endforeach
+                        </select>
+                        <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
                     @error('agency_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div class="flex items-center gap-3 pt-6">
@@ -117,30 +159,42 @@
                     placeholder="Nom, email, téléphone…"
                     class="form-input pl-10">
             </div>
-            <select wire:model.live="roleFilter" class="form-select">
-                <option value="">Tous les rôles</option>
-                @foreach ($roleFilters as $roleOption)
-                    <option value="{{ $roleOption->value }}">{{ $roleOption->label() }}</option>
-                @endforeach
-            </select>
-            <select wire:model.live="statusFilter" class="form-select">
-                <option value="">Tous les statuts</option>
-                <option value="active">Actifs</option>
-                <option value="inactive">Inactifs</option>
-            </select>
+            <div class="select-wrap">
+                <select wire:model.live="roleFilter" class="form-select">
+                    <option value="">Tous les rôles</option>
+                    @foreach ($roleFilters as $roleOption)
+                        <option value="{{ $roleOption->value }}">{{ $roleOption->label() }}</option>
+                    @endforeach
+                </select>
+                <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+            </div>
+            <div class="select-wrap">
+                <select wire:model.live="statusFilter" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    <option value="active">Actifs</option>
+                    <option value="inactive">Inactifs</option>
+                </select>
+                <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+            </div>
             @if ($canFilterAgency)
-            <select wire:model.live="agencyFilter" class="form-select">
-                <option value="">Toutes agences</option>
-                @foreach ($agencies as $agency)
-                    <option value="{{ $agency->id }}">{{ $agency->name }}</option>
-                @endforeach
-            </select>
+            <div class="select-wrap">
+                <select wire:model.live="agencyFilter" class="form-select">
+                    <option value="">Toutes agences</option>
+                    @foreach ($agencies as $agency)
+                        <option value="{{ $agency->id }}">{{ $agency->name }}</option>
+                    @endforeach
+                </select>
+                <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+            </div>
             @else
-            <select wire:model.live="perPage" class="form-select">
-                <option value="10">10 par page</option>
-                <option value="25">25 par page</option>
-                <option value="50">50 par page</option>
-            </select>
+            <div class="select-wrap">
+                <select wire:model.live="perPage" class="form-select">
+                    <option value="10">10 par page</option>
+                    <option value="25">25 par page</option>
+                    <option value="50">50 par page</option>
+                </select>
+                <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+            </div>
             @endif
         </div>
 

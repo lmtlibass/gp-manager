@@ -46,6 +46,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::view('/notifications', 'notifications.index')->name('notifications.index');
     });
 
+    Route::middleware(['can:manage-agency'])->group(function () {
+        Route::view('/trips', 'trips.index')->name('trips.index');
+    });
+
     Route::middleware(['can:manage-users'])->group(function () {
         Route::view('/users', 'user.index')->name('users.index');
         Route::view('/users/create', 'user.index')->name('users.create');

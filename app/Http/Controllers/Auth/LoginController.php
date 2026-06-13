@@ -31,7 +31,7 @@ class LoginController extends Controller
                     ->with('error', 'Votre compte a été désactivé.');
             }
 
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('withdrawals.process'));
         }
 
         return redirect()->route('login')

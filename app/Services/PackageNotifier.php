@@ -72,6 +72,18 @@ class PackageNotifier
         }
     }
 
+    public function notifyWithdrawal(Package $package, string $receiverName): void
+    {
+        $tracking = $package->tracking_number;
+        $date = now()->format('d/m/Y à H:i');
+
+        $this->dispatch(
+            $package,
+            $package->sender?->phone,
+            "Votre colis *{$tracking}* a été retiré par *{$receiverName}* le {$date}. Livraison confirmée. Merci !"
+        );
+    }
+
     private function dispatch(Package $package, ?string $phone, string $message): void
     {
         if (! $phone) {

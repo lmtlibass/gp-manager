@@ -33,12 +33,15 @@
                             <label class="form-label">
                                 <i class="fa-solid fa-user-tag text-slate-400 mr-1.5 text-xs"></i>Expéditeur
                             </label>
-                            <select wire:model="sender_id" class="form-select">
-                                <option value="">Choisir l'expéditeur…</option>
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
-                                @endforeach
-                            </select>
+                            <div class="select-wrap">
+                                <select wire:model="sender_id" class="form-select">
+                                    <option value="">Choisir l'expéditeur…</option>
+                                    @foreach ($customers as $customer)
+                                        <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
+                                    @endforeach
+                                </select>
+                                <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                            </div>
                             @error('sender_id')
                             <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
                             @enderror
@@ -47,12 +50,15 @@
                             <label class="form-label">
                                 <i class="fa-solid fa-user-check text-slate-400 mr-1.5 text-xs"></i>Destinataire
                             </label>
-                            <select wire:model="receiver_id" class="form-select">
-                                <option value="">Choisir le destinataire…</option>
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
-                                @endforeach
-                            </select>
+                            <div class="select-wrap">
+                                <select wire:model="receiver_id" class="form-select">
+                                    <option value="">Choisir le destinataire…</option>
+                                    @foreach ($customers as $customer)
+                                        <option value="{{ $customer->id }}">{{ $customer->full_name }} · {{ $customer->phone }}</option>
+                                    @endforeach
+                                </select>
+                                <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                            </div>
                             @error('receiver_id')
                             <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>
                             @enderror
@@ -107,26 +113,97 @@
                         </div>
                         <div>
                             <label class="form-label">Statut</label>
-                            <select wire:model="status" class="form-select">
-                                @foreach ($statuses as $statusOption)
-                                    <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label">Pays d'origine</label>
-                            <div class="field-wrap">
-                                <span class="field-icon"><i class="fa-solid fa-plane-departure"></i></span>
-                                <input wire:model="origin_country" type="text"
-                                    class="form-input pl-10" placeholder="France">
+                            <div class="select-wrap">
+                                <select wire:model="status" class="form-select">
+                                    @foreach ($statuses as $statusOption)
+                                        <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
+                                    @endforeach
+                                </select>
+                                <span class="select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                             </div>
                         </div>
                         <div>
-                            <label class="form-label">Pays de destination</label>
-                            <div class="field-wrap">
-                                <span class="field-icon"><i class="fa-solid fa-plane-arrival"></i></span>
-                                <input wire:model="destination_country" type="text"
-                                    class="form-input pl-10" placeholder="Sénégal">
+                            <label class="form-label">
+                                <i class="fa-solid fa-plane-departure text-slate-400 mr-1.5 text-xs"></i>Pays d'origine
+                            </label>
+                            <div x-data="countryPicker()" x-modelable="value" wire:model="origin_country"
+                                 class="relative" @click.away="open = false">
+                                <button type="button" @click="open = !open"
+                                    class="form-input w-full flex items-center gap-2.5 text-left cursor-pointer">
+                                    <span x-show="selected" x-text="selected?.flag" class="text-xl leading-none shrink-0"></span>
+                                    <span x-show="!selected" class="text-xl leading-none shrink-0 opacity-30">🌍</span>
+                                    <span class="flex-1 text-sm truncate"
+                                          :class="selected ? 'text-slate-900' : 'text-slate-400'"
+                                          x-text="selected ? selected.name : 'Choisir un pays…'"></span>
+                                    <i class="fa-solid fa-chevron-down text-xs text-slate-400 shrink-0 transition-transform duration-200"
+                                       :class="open ? 'rotate-180' : ''"></i>
+                                </button>
+                                <div x-show="open" x-cloak
+                                     x-transition:enter="transition ease-out duration-150"
+                                     x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
+                                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                     class="absolute inset-x-0 top-full z-50 mt-1.5 rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden">
+                                    <div class="p-2.5 border-b border-slate-100">
+                                        <div class="relative">
+                                            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-xs"></i></span>
+                                            <input x-model="search" type="text" placeholder="Rechercher un pays…"
+                                                   class="w-full rounded-xl border border-slate-200 py-2 pl-8 pr-3 text-sm outline-none focus:border-[#0062a3] focus:ring-2 focus:ring-[#0062a3]/15" @click.stop>
+                                        </div>
+                                    </div>
+                                    <ul class="max-h-52 overflow-y-auto divide-y divide-slate-50 py-1">
+                                        <template x-for="c in filtered" :key="c.code">
+                                            <li><button type="button" @click="select(c)"
+                                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-[#0062a3]/5 transition-colors">
+                                                <span x-text="c.flag" class="text-xl leading-none w-7 text-center shrink-0"></span>
+                                                <span x-text="c.name" class="flex-1 text-sm font-medium text-slate-700"></span>
+                                                <span x-text="c.dial" class="text-xs text-slate-400 font-mono"></span>
+                                            </button></li>
+                                        </template>
+                                        <li x-show="filtered.length === 0" class="px-4 py-4 text-sm text-slate-400 text-center">Aucun pays trouvé</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">
+                                <i class="fa-solid fa-plane-arrival text-slate-400 mr-1.5 text-xs"></i>Pays de destination
+                            </label>
+                            <div x-data="countryPicker()" x-modelable="value" wire:model="destination_country"
+                                 class="relative" @click.away="open = false">
+                                <button type="button" @click="open = !open"
+                                    class="form-input w-full flex items-center gap-2.5 text-left cursor-pointer">
+                                    <span x-show="selected" x-text="selected?.flag" class="text-xl leading-none shrink-0"></span>
+                                    <span x-show="!selected" class="text-xl leading-none shrink-0 opacity-30">🌍</span>
+                                    <span class="flex-1 text-sm truncate"
+                                          :class="selected ? 'text-slate-900' : 'text-slate-400'"
+                                          x-text="selected ? selected.name : 'Choisir un pays…'"></span>
+                                    <i class="fa-solid fa-chevron-down text-xs text-slate-400 shrink-0 transition-transform duration-200"
+                                       :class="open ? 'rotate-180' : ''"></i>
+                                </button>
+                                <div x-show="open" x-cloak
+                                     x-transition:enter="transition ease-out duration-150"
+                                     x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
+                                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                     class="absolute inset-x-0 top-full z-50 mt-1.5 rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden">
+                                    <div class="p-2.5 border-b border-slate-100">
+                                        <div class="relative">
+                                            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-xs"></i></span>
+                                            <input x-model="search" type="text" placeholder="Rechercher un pays…"
+                                                   class="w-full rounded-xl border border-slate-200 py-2 pl-8 pr-3 text-sm outline-none focus:border-[#0062a3] focus:ring-2 focus:ring-[#0062a3]/15" @click.stop>
+                                        </div>
+                                    </div>
+                                    <ul class="max-h-52 overflow-y-auto divide-y divide-slate-50 py-1">
+                                        <template x-for="c in filtered" :key="c.code">
+                                            <li><button type="button" @click="select(c)"
+                                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-[#0062a3]/5 transition-colors">
+                                                <span x-text="c.flag" class="text-xl leading-none w-7 text-center shrink-0"></span>
+                                                <span x-text="c.name" class="flex-1 text-sm font-medium text-slate-700"></span>
+                                                <span x-text="c.dial" class="text-xs text-slate-400 font-mono"></span>
+                                            </button></li>
+                                        </template>
+                                        <li x-show="filtered.length === 0" class="px-4 py-4 text-sm text-slate-400 text-center">Aucun pays trouvé</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
